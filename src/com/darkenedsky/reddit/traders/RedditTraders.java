@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,42 @@ import com.omrlnr.jreddit.messages.PrivateMessage;
 import com.omrlnr.jreddit.subreddit.Subreddit;
 import com.omrlnr.jreddit.utils.Utils;
 
+
+/** 
+ * This bot responds to Reddit private messages in order to maintain an Ebay-like feedback system for 
+ * users of swap meet-style subreddits. It is available under the MIT license.
+ * 
+ * Features include:
+ * - Allow users to record their own successful trades without moderator involvement
+ * - Install, activate and deactivate in new subreddits without interaction from the author
+ * - Look up a user's feedback or view a leaderboard for the subreddit
+ * - Support legacy trades from before the bot was responsible for a subreddit
+ * - Assign flair to users when they have reached certain configurable threshholds
+ * - Provide a framework for dispute resolution by a subreddit's moderators
+ * - 
+ * @author Matt Holden (matt@mattholden.com)
+ *
+ */
 public class RedditTraders {
 
-	
+	/** The Configuration information we will load from config.xml */
 	private Configuration config;
 	
-	
+	/** Evaluate the 'text' string to see if it is a valid command, and execute it if it is.
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param pm The message the bot received
+	 * @param text The line of the message being evaluated
+	 * @param response A string buffer to write any output to, so that if a message contains multiple commands,
+	 * 					they will all be responded to in the same reply message.
+	 * 
+	 * @return true if a command was found and executed
+	 * 
+	 * @throws MalformedURLException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private boolean doCommand(PrivateMessage pm, String text, StringBuffer response) throws MalformedURLException, SQLException, IOException, ParseException { 
 		
 		if (text == null || "".equals(text)) return false;
@@ -31,6 +62,10 @@ public class RedditTraders {
 		
 		if (command.equals("HELP")) { 
 			help(pm, tokens, response);
+			return true;
+		}
+		if (command.equals("ABOUT")) { 
+			about(pm, tokens, response);
 			return true;
 		}
 		else if (command.equals("TRADE")) { 
@@ -98,9 +133,22 @@ public class RedditTraders {
 		return false;
 	}
 	
+	
+	/** 
+	 * Reply to the user with a list of all the bot's publicly available commands.
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void help(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 
 			
-		sb.append("*RedditTraders ModBot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Command Usage*\n\n");
+		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Command Usage*\n\n");
 		sb.append("--------------------------------------------------------------\n\n");		
 		sb.append("HELP: Receive this message. \n\n* Usage: HELP\n\n* Example: HELP\n\n");
 		sb.append("LOOKUP: Lookup a redditor's trading history. \n\n* Usage: LOOKUP [redditor name]\n\n* Example: LOOKUP RedditTraders\n\n");
@@ -108,6 +156,7 @@ public class RedditTraders {
 		sb.append("CONFIRM: Confirm that a trade was successful.\n\n* Usage: CONFIRM [trade id]\n\n* Example: CONFIRM 8675309\n\n");
 		sb.append("DISPUTE: Dispute that a trade was successful. *This will notify the mods.*\n\n* Usage: DISPUTE [trade id]\n\n* Example: DISPUTE 8675309\n\n");
 		sb.append("TOP20: Get the top 20 traders for a subreddit.\n\n* Usage: TOP20 [subreddit]\n\n* Example: TOP20 retrogameswap\n\n");
+		sb.append("ABOUT: Information about the bot's open-source license and authorship.\n\n* Usage: ABOUT\n\n* Example: ABOUT\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
 		sb.append("\nModerator-Only Functions\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
@@ -129,8 +178,52 @@ public class RedditTraders {
 		
 	}
 	
+	/** 
+	 * Reply to the user with information about the bot and its author
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	private void about(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 
+			
+		sb.append("*RedditTraders ModBot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Command Usage*\n\n");
+		sb.append("--------------------------------------------------------------\n\n");		
+		String cDate = "2013";
+		int yr = Calendar.getInstance().get(Calendar.YEAR);
+		if (yr != 2013) { 
+			cDate += "-" + yr;
+		}
+		sb.append("(C) " + cDate + " Matt Holden (matt@mattholden.com)\n\n");
+		sb.append("RedditTraders is free, open-source software provided under the [MIT License](http://opensource.org/licenses/MIT).\n\n");
+		sb.append("All code and required libraries can be found at [the author's GitHub](http://www.github.com/mattholden/RedditTraders).\n\n");
+		sb.append("The bot is written in [Java](http://www.java.com) and powered by [PostgreSQL](http://www.postgresql.org).\n\n");
+		sb.append("The bot is written in [Java](http://www.java.com) and powered by [PostgreSQL](http://www.postgresql.org).\n\n");
+		sb.append("This code utilizes [jReddit by Omer Elnour](https://bitbucket.org/_oe/jreddit) under the jReddit Attribution License.\n\n");
+		sb.append("--------------------------------------------------------------\n\n");		
+		sb.append("Questions? Pull requests? Visit the /r/"+config.getSupportReddit() + " subreddit or message /u/" + config.getAuthor() + ". \n\nPlease note that I only check for new messages every " + config.getSleepSec() + " seconds or so. Please be patient! ;)\n\n\n");
+		
+	}
 	
 		
+	/** 
+	 * Reply to the user (moderator only) with a list of the flair classes configured on this subreddit
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void viewFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 2) { 
@@ -156,6 +249,19 @@ public class RedditTraders {
 		sb.append("\n\n\n");
 	}
 	
+	/** 
+	 * Moderator function to set the CSS class for a special flair to assign to moderators
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void setModFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		
 		String flair = null;
@@ -189,6 +295,21 @@ public class RedditTraders {
 		
 	}
 	
+	/** 
+	 * Moderator function to set the flair for a particular number of trades to a certain CSS class, or delete
+	 * the flair entirely (which occurs when the command is REMOVEFLAIR)
+	 *
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void setFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 	
 		
@@ -236,6 +357,21 @@ public class RedditTraders {
 		
 	}
 	
+	/** 
+	 * Moderator function to toggle whether a subreddit's trade counts should include every trade
+	 * we have seen for a user and not just the trades he/she has made on this subreddit
+	 * 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
 	private void countAllSubreddits(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 3) { 
 			help(msg, tokens, sb);
@@ -255,6 +391,21 @@ public class RedditTraders {
 		
 	}
 	
+	/** 
+	 * Moderator function to toggle whether flair assignment should include a text element that reads "X trades"
+	 * where X is the number of successful trades the user has conducted
+	 * 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void setTextFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 3) { 
 			help(msg, tokens, sb);
@@ -274,6 +425,21 @@ public class RedditTraders {
 		
 	}
 	
+	/** 
+	 * Moderator function to set the number of legacy trades (trades completed in their subreddit by this user
+	 * before the bot was in charge of monitoring trades)
+	 * 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void setLegacy(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 4) { 
@@ -302,6 +468,19 @@ public class RedditTraders {
 	}
 	
 	
+	/** 
+	 * Looks up a given user's feedback score and renders it. 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void lookup(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		if (tokens.length < 2) { 
 			help(msg, tokens, sb);
@@ -370,6 +549,19 @@ public class RedditTraders {
 		
 	}
 	
+	/** 
+	 * Initiate a trade confirmation between two Redditors.
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws SQLException
+	 */
 	private void trade(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		if (tokens.length < 3) { 
 			help(msg, tokens, sb);
@@ -476,6 +668,20 @@ public class RedditTraders {
 		sb.append("Thanks for being an active member of /r/"+ subreddit + "!\n\n\n");
 	}
 	
+	/** 
+	 * Get a list of the top traders in a given subreddit
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param count 	The number of traders you want to see
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
 	private void topTraders(PrivateMessage pm, String[] tokens, int count, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		
 		if (tokens.length < 2) { 
@@ -509,6 +715,19 @@ public class RedditTraders {
 	
 	}
 	
+	/** 
+	 * Confirm that a trade has been successful. Will update all data for the trade as well as assign flair.
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void confirm(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
 		
 		if (tokens.length < 2) { 
@@ -592,6 +811,19 @@ public class RedditTraders {
 		
 	}
 	
+	/** 
+	 * Internal method to do the actual setting of flair
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param user			Redditor's username
+	 * @param subreddit		The subreddit being traded on
+	 * @param doTextFlair	'true' if the TEXTFLAIR option is turned on for this subreddit
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @throws SQLException
+	 */
 	private void setUserFlair(String user, String subreddit, boolean doTextFlair) throws SQLException, MalformedURLException, IOException, ParseException { 
 	
 		int trades = 0;
@@ -632,7 +864,19 @@ public class RedditTraders {
 		
 	}
 	
-	
+	/** 
+	 * Dispute that a trade was successfully completed. This will notify the subreddit's moderators. 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param pm		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void dispute(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
 		
 		if (tokens.length < 2) { 
@@ -707,6 +951,19 @@ public class RedditTraders {
 		sendMessage("/r/" + subreddit, "Trade Disputed", m);
 	}
 
+	/** 
+	 * Moderator function to resolve a disputed trade, optimally assigning blame to one user or the other 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void resolve(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
 		
 		if (tokens.length < 2) { 
@@ -820,6 +1077,22 @@ public class RedditTraders {
 		sendMessage("/r/" + subreddit, "Trade Dispute Resolved", m);
 	}
 	
+	/** 
+	 * Activate or deactivate the bot in a particular subreddit.
+	 * This will only deactivate new TRADE requests; we will allow lookups and we will allow any existing
+	 * trades in progress to be completed.
+	 *  
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void activate(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {		
 		
 		if (tokens.length < 3) { 
@@ -857,6 +1130,19 @@ public class RedditTraders {
 		sb.append("The RedditTraders bot has been successfully " + ((activate)?"":"de") + "activated on subreddit /r/"+sub+".\n\n\n");
 	}
 	
+	/** 
+	 * Moderator function to install the bot in a new subreddit where it has never run before 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws SQLException
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void install(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 2) { 
@@ -894,9 +1180,10 @@ public class RedditTraders {
 		
 	}
 	
-
-
-	
+	/** 
+	 * Called in a loop every so many seconds to get messages and run any commands found within them. 
+	 * @author Matt Holden (matt@mattholden.com)
+	 */
 	private void process() {
 		List<PrivateMessage> messages = null;
 	
@@ -963,7 +1250,18 @@ public class RedditTraders {
 			
 		}
 	}
-
+	
+	/** 
+	 * Parses a message inviting the bot to become moderator of a subreddit, and accepts it 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void acceptModeratorInvite(PrivateMessage pm, String[] tokens) throws MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 10) { 
 			return;
@@ -975,6 +1273,16 @@ public class RedditTraders {
 		
 	}
 	
+	/** Check to see if the bot is a moderator in the subreddit
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param subreddit Name of the subreddit 
+	 * @return true if the bot is a moderator of it
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private boolean botIsModerator(String subreddit) throws MalformedURLException, IOException, ParseException { 
 		
 		Subreddit sub = new Subreddit();
@@ -995,6 +1303,21 @@ public class RedditTraders {
 		return isMod;					
 	}
 	
+	/** Check to see if the sender of this message is a moderator on a subreddit. The subreddit's name
+	 * must be the contents of tokens[1] to do the check. If you want to check moderation on a message not
+	 * formatted like this, use the isModerator() method.
+	 * 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @return true if the bot is a moderator of the subreddit listed in tokens[1]
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 * @see isModerator()
+	 */
 	private boolean senderIsModerator(PrivateMessage msg, String[] tokens) throws MalformedURLException, IOException, ParseException { 
 		
 		String sender = msg.getAuthor();
@@ -1008,6 +1331,20 @@ public class RedditTraders {
 		return isModerator(sender, subreddit);
 	}
 	
+	
+	/** 
+	 * A more general check to see if a user is the moderator of a subreddit
+	 * 
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param sender	User we are testing
+	 * @param subreddit	The subreddit we want the user to be a moderator of
+	 * @return true if the bot is a moderator of the subreddit
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private boolean isModerator(String sender, String subreddit) throws MalformedURLException, IOException, ParseException { 
 		Subreddit sub = new Subreddit();
 		sub.setDisplayName(subreddit);
@@ -1016,12 +1353,29 @@ public class RedditTraders {
 		return mods.contains(sender);
 	}
 	
+	/** 
+	 * Send a private message to a user on Reddit
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param user Username of the recipient
+	 * @param sub Subject of the message
+	 * @param body Body of the message
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	private void sendMessage(String user, String sub, StringBuffer body) throws MalformedURLException, IOException, ParseException {
 		System.out.println("Sending message " + sub + " to user " + user);
 		new PrivateMessage(user, sub, body.toString()).send(config.getBotUser());
 		
 	}
 	
+	/** 
+	 * The entry point for the RedditTraders application.
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param args		Command line parameters (not used)
+	 */	
 	public static void main(String[] args) { 
 		RedditTraders instance = new RedditTraders();	
 		while (true) { 
@@ -1036,6 +1390,11 @@ public class RedditTraders {
 		}
 	}
 	
+	/** 
+	 * Construct a new RedditTraders instance.
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 */
 	public RedditTraders() { 
 		
 		// Load XML configuration file, connect to DB and connect to Reddit API

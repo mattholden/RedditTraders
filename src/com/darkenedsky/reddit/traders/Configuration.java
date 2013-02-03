@@ -8,9 +8,9 @@ import com.omrlnr.jreddit.utils.Utils;
 import com.darkenedsky.gemini.common.JDBCConnection;
 
 /** 
- * Load all the configuration for the bot and establish connections 
+ * Loads all the configuration for the bot from XML and establishes connections. 
  * 	
- * @author Matt Holden 
+ * @author Matt Holden (matt@mattholden.com) 
  * */
 public class Configuration {
 
@@ -23,7 +23,19 @@ public class Configuration {
 	/** Reddit user for the bot. We'll need to pass this in to reddit API calls in jreddit */
 	private User botUser;
 	
-	private String author, supportReddit, supportEmail, version;
+	/** Bot author's name */
+	private String author;
+	
+	/** Bot's support reddit */
+	private String supportReddit;
+	
+	/** Bot's support email */
+	private String supportEmail;
+	
+	/** Bot version */	
+	private String version;
+	
+	/** Length of time (in seconds) to sleep between checks for new messages */
 	private int sleepSec = 15;
 	
 	
@@ -43,10 +55,15 @@ public class Configuration {
 			
 			// Set the user agent for the reddit api
 			Utils.setUserAgent(getString(e, "reddit_user_agent"));
+			
+			// authorship info to be displayed in the bot's help and source
 			author = getString(e, "author");
 			version = getString(e, "version");
 			supportReddit = getString(e, "supportreddit");
 			supportEmail = getString(e, "supportemail");
+			
+			// These three numbers help us throttle the bot so it doesn't run afoul of Reddit's 
+			// 30 calls per minute requirement and get itself banned.
 			String sec = getString(e, "sleepsec");
 			if (sec != null) { 
 				try { 
@@ -84,44 +101,29 @@ public class Configuration {
 						
 	}
 
+	/** @return the Reddit username of the author */
 	public String getAuthor() {
 		return author;
 	}
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
-
+	/** @return the name of the subreddit where you can get support for this bot */
 	public String getSupportReddit() {
 		return supportReddit;
 	}
 
-	public void setSupportReddit(String supportReddit) {
-		this.supportReddit = supportReddit;
-	}
-
+	/** @return the email address of the author */
 	public String getSupportEmail() {
 		return supportEmail;
 	}
 
-	public void setSupportEmail(String supportEmail) {
-		this.supportEmail = supportEmail;
-	}
-
+	/** @return the version number of the bot */
 	public String getVersion() {
 		return version;
 	}
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
+	/** @return the number of seconds to sleep between checks for new messages */
 	public int getSleepSec() {
 		return sleepSec;
-	}
-
-	public void setSleepSec(int sleepSec) {
-		this.sleepSec = sleepSec;
 	}
 
 	/** @return the JDBC connection object */
@@ -129,15 +131,22 @@ public class Configuration {
 		return jdbc;
 	}
 	
-	/** @return the reddit user object for the bot */
+	/** @return the jReddit user object for the bot */
 	public User getBotUser() { 
 		return botUser;
 	}
 	
+	/** Convenience method to get a string out of an xml tag
+	 * 
+	 * @param root The XML Element that contains the tag
+	 * @param elem The name of the child XML element you want the value of
+	 * @return The text of the requested element
+	 */
 	@SuppressWarnings("rawtypes")
 	private String getString(Element root, String elem) { 
 		List list = root.getChildren(elem);
 		if (list.size() == 0) return null;
 		return ((Element)list.get(0)).getText();
 	}
+	
 }
