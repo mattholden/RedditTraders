@@ -192,21 +192,21 @@ public class RedditTraders {
 	 */
 	private void about(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 
 			
-		sb.append("*RedditTraders ModBot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Command Usage*\n\n");
-		sb.append("--------------------------------------------------------------\n\n");		
 		String cDate = "2013";
 		int yr = Calendar.getInstance().get(Calendar.YEAR);
 		if (yr != 2013) { 
 			cDate += "-" + yr;
 		}
+
+		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n");
 		sb.append("(C) " + cDate + " Matt Holden (matt@mattholden.com)\n\n");
+		sb.append("--------------------------------------------------------------\n\n");		
 		sb.append("RedditTraders is free, open-source software provided under the [MIT License](http://opensource.org/licenses/MIT).\n\n");
 		sb.append("All code and required libraries can be found at [the author's GitHub](http://www.github.com/mattholden/RedditTraders).\n\n");
 		sb.append("The bot is written in [Java](http://www.java.com) and powered by [PostgreSQL](http://www.postgresql.org).\n\n");
-		sb.append("The bot is written in [Java](http://www.java.com) and powered by [PostgreSQL](http://www.postgresql.org).\n\n");
 		sb.append("This code utilizes [jReddit by Omer Elnour](https://bitbucket.org/_oe/jreddit) under the jReddit Attribution License.\n\n");
 		sb.append("--------------------------------------------------------------\n\n");		
-		sb.append("Questions? Pull requests? Visit the /r/"+config.getSupportReddit() + " subreddit or message /u/" + config.getAuthor() + ". \n\nPlease note that I only check for new messages every " + config.getSleepSec() + " seconds or so. Please be patient! ;)\n\n\n");
+		sb.append("Questions? Pull requests? Visit the /r/"+config.getSupportReddit() + " subreddit or message /u/" + config.getAuthor() + ".\n\n\n");
 		
 	}
 	
