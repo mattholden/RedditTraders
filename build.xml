@@ -1,0 +1,66 @@
+<project name="RedditTraders" default="dist" basedir=".">
+	<description>
+    	 This bot responds to Reddit private messages in order to maintain an Ebay-like feedback system for 
+    	 users of swap meet-style subreddits. It is available under the MIT license.
+    </description>
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="dist" location="dist" />
+	<path id="master-classpath">
+		<fileset dir="lib" id="libpath">
+			<include name="*.jar" />
+		</fileset>
+		
+	</path>
+	
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp />
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}" />
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac destdir="${build}">
+			<src path="${src}" />
+			<classpath refid="master-classpath" />
+		</javac>
+	</target>
+
+	<target name="dist" depends="compile" description="generate the distribution">
+		<!-- Create the distribution directory -->
+		<mkdir dir="${dist}/lib" />
+		<mkdir dir="${dist}/src" />
+
+		<copy file="build.xml" todir="${dist}" />
+		<copy file="config.xml" todir="${dist}" />
+		<copy file="License.txt" todir="${dist}" />
+		<copy file="log4j.properties" todir="${dist}" />
+		<copy file="sample-config.xml" todir="${dist}" />
+
+		<copy todir="${dist}/src">
+			<fileset dir="${src}" />
+		</copy>
+		<copy todir="${dist}/lib">
+			<fileset dir="lib" />
+		</copy>
+		<copy todir="${dist}">
+			<fileset dir="${build}" />
+		</copy>
+
+		<!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+		<jar jarfile="RedditTraders.jar" basedir="${dist}">
+
+
+			<manifest>
+				<attribute name="Main-Class" value="com.darkenedsky.reddit.traders.RedditTraders" />
+				<attribute name="Class-Path" value="./lib/jdom.jar ./lib/json-simple-1.1.1.jar ./lib/postgresql-9.0-801.jdbc4.jar ./lib/log4j-1.2.17.jar" />
+			</manifest>
+		</jar>
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+
+</project>
