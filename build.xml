@@ -11,9 +11,9 @@
 		<fileset dir="lib" id="libpath">
 			<include name="*.jar" />
 		</fileset>
-		
+
 	</path>
-	
+
 	<target name="init">
 		<!-- Create the time stamp -->
 		<tstamp />
@@ -27,12 +27,18 @@
 			<src path="${src}" />
 			<classpath refid="master-classpath" />
 		</javac>
+
 	</target>
 
 	<target name="dist" depends="compile" description="generate the distribution">
 		<!-- Create the distribution directory -->
 		<mkdir dir="${dist}/lib" />
 		<mkdir dir="${dist}/src" />
+		<mkdir dir="${dist}/javadoc" />
+		<javadoc sourcepath="${src}" destdir="${dist}/javadoc" classpathref="master-classpath">
+			<package name="com.*" />
+			<excludepackage name="com.omrlnr.*" />
+		</javadoc>
 
 		<copy file="build.xml" todir="${dist}" />
 		<copy file="config.xml" todir="${dist}" />

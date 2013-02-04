@@ -11,10 +11,12 @@ import java.sql.*;
  */
 public class JDBCConnection {
 
+	/** Connection to the DB */
+	protected Connection connection;
+
 	/**
 	 * Toggles auto-commit on a connection
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
 	 * @param ac
 	 *            true if autocommit is to be on
 	 * @throws SQLException
@@ -26,7 +28,6 @@ public class JDBCConnection {
 	/**
 	 * Commits a transaction (only needed if autocommit is off)
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
 	 * @throws SQLException
 	 */
 	public void commit() throws SQLException {
@@ -36,16 +37,13 @@ public class JDBCConnection {
 	/**
 	 * Roll back a transaction not yet committed
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
 	 * @throws SQLException
 	 */
 	public void rollback() throws SQLException {
 		connection.rollback();
 	}
 
-	/** Connection to the DB */
-	protected Connection connection;
-
+	
 	/**
 	 * Creates a new instance of JDBCConnection
 	 * 
@@ -66,7 +64,6 @@ public class JDBCConnection {
 
 	/**
 	 * Close the database connection
-	 * @author Matt Holden (matt@mattholden.com)
 	 * @throws SQLException
 	 */
 	public void close() throws SQLException {
@@ -77,7 +74,7 @@ public class JDBCConnection {
 	/**
 	 * Get the count of rows in a ResultSet
 	 * 
-	 * @param rs
+	 * @param set
 	 *            ResultSet to count rows on
 	 * @return number of rows (might be zero)
 	 */

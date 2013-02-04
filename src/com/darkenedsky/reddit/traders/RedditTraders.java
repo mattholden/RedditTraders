@@ -46,7 +46,7 @@ public class RedditTraders {
 	private Configuration config;
 	
 	/** Evaluate the 'text' string to see if it is a valid command, and execute it if it is.
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param pm The message the bot received
 	 * @param text The line of the message being evaluated
@@ -158,7 +158,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Reply to the user with a list of all the bot's publicly available commands.
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -187,7 +187,7 @@ public class RedditTraders {
 		
 	/** 
 	 * Reply to the user with a list of all the bot's publicly available commands.
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -222,7 +222,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Reply to the user with information about the bot and its author
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -255,7 +255,7 @@ public class RedditTraders {
 		
 	/** 
 	 * Reply to the user (moderator only) with a list of the flair classes configured on this subreddit
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -293,7 +293,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Moderator function to set the CSS class for a special flair to assign to moderators
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -341,7 +341,7 @@ public class RedditTraders {
 	 * Moderator function to set the flair for a particular number of trades to a certain CSS class, or delete
 	 * the flair entirely (which occurs when the command is REMOVEFLAIR)
 	 *
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -403,7 +403,7 @@ public class RedditTraders {
 	 * Moderator function to toggle whether a subreddit's trade counts should include every trade
 	 * we have seen for a user and not just the trades he/she has made on this subreddit
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -435,7 +435,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Moderator function to set the criteria for banning a user for receiving too many blames
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -482,7 +482,7 @@ public class RedditTraders {
 	 * Moderator function to toggle whether flair assignment should include a text element that reads "X trades"
 	 * where X is the number of successful trades the user has conducted
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -516,7 +516,7 @@ public class RedditTraders {
 	 * Moderator function to set the number of legacy trades (trades completed in their subreddit by this user
 	 * before the bot was in charge of monitoring trades)
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -572,7 +572,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Looks up a given user's feedback score and renders it. 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -678,7 +678,7 @@ public class RedditTraders {
 	}
 	
 	/** Render a percentage of two integers neatly
-	 *  @author Matt Holden (matt@mattholden.com)
+	 *  
 	
 	 *  @param amt numerator
 	 *  @param den denominator
@@ -695,7 +695,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Initiate a trade confirmation between two Redditors.
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -814,7 +814,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Get a list of the top traders in a given subreddit
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -861,7 +861,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Confirm that a trade has been successful. Will update all data for the trade as well as assign flair.
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -957,7 +957,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Internal method to do the actual setting of flair
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param user			Redditor's username
 	 * @param subreddit		The subreddit being traded on
@@ -1010,7 +1010,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Dispute that a trade was successfully completed. This will notify the subreddit's moderators. 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param pm		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -1097,7 +1097,7 @@ public class RedditTraders {
 
 	/** 
 	 * Moderator function to resolve a disputed trade, optimally assigning blame to one user or the other 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -1243,7 +1243,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Ban a user from the subreddit
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * @param user User to ban
 	 * @param sub subreddit to ban from
 	 * @param comment Reason for the ban	 
@@ -1263,7 +1263,7 @@ public class RedditTraders {
 	 * This will only deactivate new TRADE requests; we will allow lookups and we will allow any existing
 	 * trades in progress to be completed.
 	 *  
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -1313,7 +1313,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Moderator function to install the bot in a new subreddit where it has never run before 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -1363,7 +1363,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Called in a loop every so many seconds to get messages and run any commands found within them. 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 */
 	private void process() {
 		List<PrivateMessage> messages = null;
@@ -1435,7 +1435,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Parses a message inviting the bot to become moderator of a subreddit, and accepts it 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -1456,7 +1456,7 @@ public class RedditTraders {
 	}
 	
 	/** Check to see if the bot is a moderator in the subreddit
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param subreddit Name of the subreddit 
 	 * @return true if the bot is a moderator of it
@@ -1489,7 +1489,7 @@ public class RedditTraders {
 	 * must be the contents of tokens[1] to do the check. If you want to check moderation on a message not
 	 * formatted like this, use the isModerator() method.
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param msg		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
@@ -1517,7 +1517,7 @@ public class RedditTraders {
 	/** 
 	 * A more general check to see if a user is the moderator of a subreddit
 	 * 
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param sender	User we are testing
 	 * @param subreddit	The subreddit we want the user to be a moderator of
@@ -1537,7 +1537,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Send a private message to a user on Reddit
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param user Username of the recipient
 	 * @param sub Subject of the message
@@ -1554,7 +1554,7 @@ public class RedditTraders {
 	
 	/** 
 	 * The entry point for the RedditTraders application.
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 * @param args		Command line parameters (not used)
 	 */	
@@ -1574,7 +1574,7 @@ public class RedditTraders {
 	
 	/** 
 	 * Construct a new RedditTraders instance.
-	 * @author Matt Holden (matt@mattholden.com)
+	 * 
 	 * 
 	 */
 	public RedditTraders() { 
