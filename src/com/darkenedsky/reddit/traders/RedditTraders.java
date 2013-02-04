@@ -6,10 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.json.simple.parser.ParseException;
 import com.omrlnr.jreddit.messages.PrivateMessage;
 import com.omrlnr.jreddit.subreddit.Subreddit;
@@ -20,6 +21,8 @@ import com.omrlnr.jreddit.utils.Utils;
  * This bot responds to Reddit private messages in order to maintain an Ebay-like feedback system for 
  * users of swap meet-style subreddits. It is available under the MIT license.
  * 
+ * Built for the fine folks at http://www.reddit.com/r/retrogameswap
+ * 
  * Features include:
  * - Allow users to record their own successful trades without moderator involvement
  * - Install, activate and deactivate in new subreddits without interaction from the author
@@ -27,7 +30,8 @@ import com.omrlnr.jreddit.utils.Utils;
  * - Support legacy trades from before the bot was responsible for a subreddit
  * - Assign flair to users when they have reached certain configurable threshholds
  * - Provide a framework for dispute resolution by a subreddit's moderators
- * - 
+ * - Automatically ban users who are blamed for enough unsuccessful trades in a window
+ *  
  * @author Matt Holden (matt@mattholden.com)
  *
  */
@@ -62,6 +66,10 @@ public class RedditTraders {
 		
 		if (command.equals("HELP")) { 
 			help(pm, tokens, response);
+			return true;
+		}
+		if (command.equals("MODHELP")) { 
+			modHelp(pm, tokens, response);
 			return true;
 		}
 		if (command.equals("ABOUT")) { 
@@ -112,7 +120,7 @@ public class RedditTraders {
 			viewFlair(pm, tokens, response);
 			return true;
 		}
-		else if ((command.equals("RESOLVE") || command.equals("BLAME"))) { 
+		else if ((command.equals("RESOLVE") || command.equals("BLAME") || command.equals("CLOSE"))) { 
 			resolve(pm, tokens, response);
 			return true;
 		}
@@ -122,6 +130,10 @@ public class RedditTraders {
 		}
 		else if ((command.equals("SETMODFLAIR") || command.equals("REMOVEMODFLAIR")) && senderIsModerator(pm, tokens)) { 
 			setModFlair(pm, tokens, response);
+			return true;
+		}
+		else if (command.equals("SETBLAMEBAN") && senderIsModerator(pm, tokens)) { 
+			setBlameBan(pm, tokens, response);
 			return true;
 		}
 		
@@ -151,6 +163,7 @@ public class RedditTraders {
 		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Command Usage*\n\n");
 		sb.append("--------------------------------------------------------------\n\n");		
 		sb.append("HELP: Receive this message. \n\n* Usage: HELP\n\n* Example: HELP\n\n");
+		sb.append("MODHELP: Receive a list of commands for moderators only. \n\n* Usage: MODHELP\n\n* Example: MODHELP\n\n");
 		sb.append("LOOKUP: Lookup a redditor's trading history. \n\n* Usage: LOOKUP [redditor name]\n\n* Example: LOOKUP RedditTraders\n\n");
 		sb.append("TRADE: Initiate a report of a successful trade.\n\n* Usage: TRADE [Redditor's name you traded with] [Trade thread URL] [OPTIONAL: Comments]\n\n* Example: TRADE RedditTraders http://www.reddit.com/r/retrogameswap/comments/178tq4/trade_la_la/ Optional comments go here\n\n");
 		sb.append("CONFIRM: Confirm that a trade was successful.\n\n* Usage: CONFIRM [trade id]\n\n* Example: CONFIRM 8675309\n\n");
@@ -158,7 +171,24 @@ public class RedditTraders {
 		sb.append("TOP20: Get the top 20 traders for a subreddit.\n\n* Usage: TOP20 [subreddit]\n\n* Example: TOP20 retrogameswap\n\n");
 		sb.append("ABOUT: Information about the bot's open-source license and authorship.\n\n* Usage: ABOUT\n\n* Example: ABOUT\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
-		sb.append("\nModerator-Only Functions\n\n");
+		sb.append("Questions? Visit the /r/"+config.getSupportReddit() + " subreddit or message /u/" + config.getAuthor() + ". \n\nPlease note that I only check for new messages every " + config.getSleepSec() + " seconds or so. Please be patient! ;)\n\n\n");
+	}
+	
+		
+	/** 
+	 * Reply to the user with a list of all the bot's publicly available commands.
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	private void modHelp(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 		
+		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Moderator Command Usage*\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
 		sb.append("INSTALL: Install the RedditTraders bot for a subreddit. \n\n* Usage: INSTALL [subreddit]\n\n* Example: INSTALL retrogameswap\n\n");
 		sb.append("ACTIVATE: Activate RedditTraders trade processing for a subreddit. Newly INSTALLed subreddits are active by default.\n\n* Usage: ACTIVATE [subreddit]\n\n* Example: ACTIVATE retrogameswap\n\n");
@@ -171,8 +201,10 @@ public class RedditTraders {
 		sb.append("REMOVEFLAIR: Remove the flair class for a trade level in the bot.\n\n* Usage: REMOVEFLAIR [subreddit] [trades]\n\n* Example: REMOVEFLAIR retrogameswap 10\n\n");		
 		sb.append("SETMODFLAIR: Set the flair class for moderators in the bot.\n\n* Usage: SETMODFLAIR [subreddit] [flairclass]\n\n* Example: SETMODFLAIR retrogameswap modsarecool\n\n");
 		sb.append("REMOVEMODFLAIR: Remove the flair class for moderators in the bot, meaning mods will have the same flair as everyone else.\n\n* Usage: REMOVEMODFLAIR [subreddit]\n\n* Example: REMOVEMODFLAIR retrogameswap\n\n");
-		sb.append("RESOLVE: Confirm that a dispute was resolved without assigning blame to either user.\n\n* Usage: RESOLVE [trade id] [OPTIONAL: comments]\n\n* Example: RESOLVE 8675309\n\n");	
+		sb.append("RESOLVE: Confirm that a dispute was resolved, resulting in a successful trade.\n\n* Usage: RESOLVE [trade id] [OPTIONAL: comments]\n\n* Example: RESOLVE 8675309\n\n");	
+		sb.append("CLOSE: Confirm that a dispute was resolved, resulting in an unsuccessful trade but without assigning fault to either redditor.\n\n* Usage: CLOSE [trade id] [OPTIONAL: comments]\n\n* Example: CLOSE 8675309\n\n");	
 		sb.append("BLAME: Confirm that a dispute was resolved and assign blame to a user.\n\n* Usage: BLAME [trade id] [username] [OPTIONAL: comments]\n\n* Example: BLAME 8675309 RedditTraders\n\n");	
+		sb.append("SETBLAMEBAN: Configure the auto-banning feature. If a user receives [blame] blames in [days] days, they will be banned. Enter 0 for both parameters to disable this feature.\n\n* Usage: SETBLAMEBAN [subreddit] [blames] [days]\n\n* Example: SETBLAMEBAN retrogameswap 5 365\n\n");
 		sb.append("--------------------------------------------------------------\n\n");		
 		sb.append("Questions? Visit the /r/"+config.getSupportReddit() + " subreddit or message /u/" + config.getAuthor() + ". \n\nPlease note that I only check for new messages every " + config.getSleepSec() + " seconds or so. Please be patient! ;)\n\n\n");
 		
@@ -227,7 +259,7 @@ public class RedditTraders {
 	private void viewFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 2) { 
-			help(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}
 		
@@ -269,14 +301,14 @@ public class RedditTraders {
 		// leave null if the command was REMOVEFLAIR - this is so we don't have to have the optional flair parameter
 		if (tokens[0].toUpperCase().equals("SETMODFLAIR")) { 
 			if (tokens.length < 3) { 
-				help(msg, tokens, sb);
+				modHelp(msg, tokens, sb);
 				return;
 			}
 			flair = tokens[2];
 		}
 		else { 
 			if (tokens.length < 2) { 
-				help(msg, tokens, sb);
+				modHelp(msg, tokens, sb);
 				return;
 			}
 		}
@@ -318,14 +350,14 @@ public class RedditTraders {
 		// leave null if the command was REMOVEFLAIR - this is so we don't have to have the optional flair parameter
 		if (tokens[0].toUpperCase().equals("SETFLAIR")) { 
 			if (tokens.length < 4) { 
-				help(msg, tokens, sb);
+				modHelp(msg, tokens, sb);
 				return;
 			}
 			flair = tokens[3];
 		}
 		else { 
 			if (tokens.length < 3) { 
-				help(msg, tokens, sb);
+				modHelp(msg, tokens, sb);
 				return;
 			}
 		}
@@ -374,7 +406,7 @@ public class RedditTraders {
 	 */
 	private void countAllSubreddits(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 3) { 
-			help(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}
 		
@@ -388,6 +420,51 @@ public class RedditTraders {
 		
 		sb.append("Flair for subreddit /r/" + tokens[1] + " will now " + 
 				(toggle ? "" : "NOT ") + "count trades in other subreddits when determining flair.\n\n\n");
+		
+	}
+	
+	/** 
+	 * Moderator function to set the criteria for banning a user for receiving too many blames
+	 * @author Matt Holden (matt@mattholden.com)
+	 * 
+	 * @param msg		The private message received from the user.
+	 * @param tokens	The individual "words" of the command we are executing
+	 * @param sb		The StringBuffer to write any response text out to the user
+	 * 
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
+	private void setBlameBan(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
+		if (tokens.length < 4) { 
+			modHelp(msg, tokens, sb);
+			return;
+		}
+		int days = 0, blames = 0;
+		try { 
+			blames = Integer.parseInt(tokens[2]);
+			days = Integer.parseInt(tokens[3]);
+		}
+		catch (NumberFormatException x) { 
+			modHelp(msg, tokens, sb);
+			return;
+		}
+		String sub = tokens[1];
+		
+		PreparedStatement ps = config.getJDBC().prepareStatement("update subreddits set banblames = ?, bandays = ? where subreddit ilike ?;");
+		ps.setInt(1, blames);
+		ps.setInt(2, days);
+		ps.setString(3, sub);
+		ps.execute();
+		
+		if (blames == 0) { 
+			sb.append("Users of subreddit /r/" + sub + " will never be automatically banned for blames.\n\n\n");
+			return;
+		}
+	
+		sb.append("Users of subreddit /r/" + tokens[1] + " will now be automatically banned if they receive " + 
+				blames + " blames in " + days + " days, respective of the subreddit's COUNTALL setting.\n\n\n");
 		
 	}
 	
@@ -408,7 +485,7 @@ public class RedditTraders {
 	 */
 	private void setTextFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 3) { 
-			help(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}
 		
@@ -443,7 +520,7 @@ public class RedditTraders {
 	private void setLegacy(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 4) { 
-			help(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}
 		String sub = tokens[1];
@@ -454,7 +531,7 @@ public class RedditTraders {
 			trades = Integer.parseInt(lt);
 		}
 		catch (NumberFormatException x) { 
-			help(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}
 		
@@ -464,6 +541,21 @@ public class RedditTraders {
 		ps.setInt(3, trades);
 		ResultSet foo = ps.executeQuery();
 		foo.close();
+		
+		// update the user's flair
+		PreparedStatement p2 = config.getJDBC().prepareStatement("select * from subreddits where subreddit ilike ?;");
+		p2.setString(1, sub);
+		ResultSet r2 = p2.executeQuery();
+		if (!r2.first()) { 
+			sb.append("SETLEGACY error: RedditTraders does not monitor subreddit /r/" + sub + ".\n\n");
+			r2.close();
+			return;
+		}
+		boolean doTextFlair = r2.getBoolean("textflair");
+		r2.close();
+		
+		this.setUserFlair(user, sub, doTextFlair);
+		
 		sb.append("Legacy trade count for user " + user + " has been updated to " + trades + " on subreddit /r/" + sub + ".\n\n\n");
 	}
 	
@@ -499,7 +591,11 @@ public class RedditTraders {
 			sb.append("Thanks for asking about me!\n\nWhile I don't have anything of my own to trade, I've participated in " + everyTrade + " trades so far.\n\nAlso, I'm a robot, so I'm perfectly reliable and never make mistakes.\n\n*And if I did, I wouldn't tell you, now would I?*\n\n\n");
 			return;
 		}
-		HashMap<String, Integer> trades = new HashMap<String, Integer>();
+		HashMap<String, Integer> successful = new HashMap<String, Integer>();
+		HashMap<String, Integer> unsuccessful = new HashMap<String, Integer>();
+		HashMap<String, Integer> blamed = new HashMap<String, Integer>();
+		HashMap<String, Integer> totals = new HashMap<String, Integer>();
+		
 		int uid = -1;
 		
 		PreparedStatement ps = config.getJDBC().prepareStatement("select redditorid from redditors where username ilike ?;");
@@ -515,38 +611,76 @@ public class RedditTraders {
 			return;
 		}
 		
-		PreparedStatement ps2 = config.getJDBC().prepareStatement("select subreddit, get_trade_count(?, redditid) as trades from subreddits order by subreddit;");
+		PreparedStatement ps2 = config.getJDBC().prepareStatement("select subreddit, get_trade_count(?, redditid) as successful, get_unsuccessful_count(?, redditid) as unsuccessful, get_blame_count(?, redditid) as blamed from subreddits order by subreddit;");
 		ps2.setInt(1, uid);
+		ps2.setInt(2, uid);
+		ps2.setInt(3, uid);
 		ResultSet tradez = ps2.executeQuery();
+		int linetotal = 0;
 		if (tradez.first()) { 
 			while (true) { 
-				trades.put(tradez.getString("subreddit"), tradez.getInt("trades"));
+				String sub = tradez.getString("subreddit");
+				int success = tradez.getInt("successful");
+				int unsuccess = tradez.getInt("unsuccessful");
+				int blame = tradez.getInt("blamed");
+				successful.put(sub, success);
+				unsuccessful.put(sub, unsuccess);
+				blamed.put(sub, blame);
+				linetotal = success + unsuccess;
+				totals.put(sub, linetotal);
+				
 				if (tradez.isLast()) break;
 				tradez.next();
 			}			
 		}
 		tradez.close();
 		
-		int total = 0;
-		for (Integer i : trades.values()) { 
-			total += i;
-		}
-		
-		if (total == 0) { 
+		if (totals.isEmpty()) { 
 			sb.append("Redditor /u/" + user + " has never executed a trade through RedditTraders.\n\n\n");
 			return;
 		}
 		
-		else { 
-			sb.append("RedditTraders trade history for user /u/" + user + ":\n\n------------------------------------------------\n\n");
-			for (Map.Entry<String, Integer> entry : trades.entrySet()) { 
-				sb.append("/r/" + entry.getKey() + " : " + entry.getValue() + " successful trades.\n\n");
-			}
-			sb.append("------------------------------------------------------\n\n*Total successful trades: "+ total +"*\n\n\n");
-			
+		int totalSuccess = 0, totalUnsuccess = 0, totalBlame = 0, totalTotal = 0;
+		ArrayList<String> subs = new ArrayList<String>(successful.keySet().size());
+		
+		for (String s : successful.keySet()) { 
+			subs.add(s.toLowerCase());
+			totalSuccess += successful.get(s);
+			totalUnsuccess += unsuccessful.get(s);
+			totalBlame += blamed.get(s);
+			totalTotal += totals.get(s);
 		}
 		
-		
+		// make sure the subreddits appear in alphabetical order
+		Collections.sort(subs);	
+	
+		sb.append("RedditTraders trade history for user /u/" + user + ":\n\n------------------------------------------------\n\n");
+		for (String s : subs) { 
+			sb.append("/r/" + s + " : ");
+			sb.append(successful.get(s) + " successful (" + renderPct(successful.get(s), totals.get(s)) + "), "); 
+			sb.append(unsuccessful.get(s) + " unsuccessful (" + renderPct(unsuccessful.get(s), totals.get(s)) + "), "); 
+			sb.append(blamed.get(s) + " at-fault (" + renderPct(blamed.get(s), totals.get(s)) + ")\n\n"); 
+		}
+		sb.append("------------------------------------------------------\n\nTotal successful trades: "+ totalTotal +" (" + renderPct(totalSuccess, totalTotal) + " )\n\n");
+		sb.append("Total unsuccessful trades: "+ totalUnsuccess +" (" + renderPct(totalUnsuccess, totalTotal) + ") \n\n");
+		sb.append("Total at-fault unsuccessful trades: "+ totalBlame +" (" + renderPct(totalBlame, totalTotal) + ") \n\n");
+				
+	}
+	
+	/** Render a percentage of two integers neatly
+	 *  @author Matt Holden (matt@mattholden.com)
+	
+	 *  @param amt numerator
+	 *  @param den denominator
+	 *  @return the percentage as a whole percent
+	 */
+	private String renderPct(int amt, int den) { 
+		double numerator = (double)amt;
+		double denominator = (double)den;
+		double pct = numerator / denominator;
+		pct *= 100.0;
+		int percent = (int)pct;
+		return percent + "%";
 	}
 	
 	/** 
@@ -796,7 +930,7 @@ public class RedditTraders {
 		
 		
 		// update the DB
-		PreparedStatement ps = config.getJDBC().prepareStatement("update trades set status = 2 where tradeid = ?;");
+		PreparedStatement ps = config.getJDBC().prepareStatement("update trades set status = 2, resolve_date = now() where tradeid = ?;");
 		ps.setInt(1, id);
 		ps.execute();
 		
@@ -967,7 +1101,7 @@ public class RedditTraders {
 	private void resolve(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
 		
 		if (tokens.length < 2) { 
-			help(pm, tokens, sb);
+			modHelp(pm, tokens, sb);
 			return;
 		}
 		
@@ -976,7 +1110,7 @@ public class RedditTraders {
 		String blame = null;
 		if (tokens[0].equalsIgnoreCase("BLAME")) { 
 			if (tokens.length < 3) { 
-				help(pm, tokens, sb);
+				modHelp(pm, tokens, sb);
 				return;
 			}
 			blame = tokens[2];
@@ -989,7 +1123,7 @@ public class RedditTraders {
 			id = Integer.parseInt(eyedee);
 		}
 		catch (NumberFormatException x) { 
-			help(pm, tokens, sb);
+			modHelp(pm, tokens, sb);
 			return;
 		}
 			
@@ -1015,14 +1149,14 @@ public class RedditTraders {
 			status = rs1.getInt("status");
 		}
 		else { 
-			sb.append("RESOLVE/BLAME error: An unknown database error has occurred.\n\n\n");
+			sb.append("RESOLVE/CLOSE/BLAME error: An unknown database error has occurred.\n\n\n");
 			rs1.close();
 			return;
 		}
 		rs1.close();
 		
 		if (status != 4) { 
-			sb.append("RESOLVE/BLAME error: Trade #" + id + " is not in dispute.\n\n\n");
+			sb.append("RESOLVE/CLOSE/BLAME error: Trade #" + id + " is not in dispute.\n\n\n");
 			return;
 		}
 
@@ -1032,18 +1166,18 @@ public class RedditTraders {
 		ResultSet rs2 = p2.executeQuery();
 		if (!rs2.first()) { 
 			rs2.close();
-			sb.append("RESOLVE/BLAME error: An unknown database error has occurred.\n\n\n");
+			sb.append("RESOLVE/CLOSE/BLAME error: An unknown database error has occurred.\n\n\n");
 			return;
 		}		
 		user2 = rs2.getString("username");
 		
 
 		if (user1.equalsIgnoreCase(pm.getAuthor()) || user2.equalsIgnoreCase(pm.getAuthor())) { 
-			sb.append("RESOLVE/BLAME error: You may not resolve your own disputed trade.\n\n\n");
+			sb.append("RESOLVE/CLOSE/BLAME error: You may not resolve your own disputed trade.\n\n\n");
 			return;
 		}
 		if (!this.isModerator(pm.getAuthor(), subreddit)) { 
-			sb.append("RESOLVE/BLAME error: Only moderators of the subreddit where the trade was executed may use this function.\n\n\n");
+			sb.append("RESOLVE/CLOSE/BLAME error: Only moderators of the subreddit where the trade was executed may use this function.\n\n\n");
 			return;
 		}
 		
@@ -1051,31 +1185,68 @@ public class RedditTraders {
 		// update the DB
 		String blamer = "";
 		if (blame != null) { 
-			blamer = ", unsuccessful_blame_redditorid = (select redditorid from redditors where username = ?)";
+			blamer = ", unsuccessful_blame_redditorid = (select redditorid from redditors where username ilike ?)";
 		}
-		PreparedStatement ps = config.getJDBC().prepareStatement("update trades set status = 3, modcomments = ?" + blamer + " where tradeid = ?;");
-		ps.setString(1, comments.toString());
+		
+		int newStatus = (tokens[0].equalsIgnoreCase("RESOLVE") ? 2 : 3);
+		PreparedStatement ps = config.getJDBC().prepareStatement("update trades set resolve_date = now(), status = ?, modcomments = ?" + blamer + " where tradeid = ?;");
+		ps.setInt(1, newStatus);
+		ps.setString(2, comments.toString());
 		if (blame != null) { 
-			ps.setString(2, blame);
-			ps.setInt(3, id);
+			ps.setString(3, blame);
+			ps.setInt(4, id);
 		}
 		else { 
-			ps.setInt(2, id);
+			ps.setInt(3, id);
 		}
 		ps.execute();
 		
 		// send messages to both users and the mods.
 		String blameMessage = "";
+		boolean banned = false;
+		
 		if (blame != null)  { 
 			blameMessage = "Blame for the unsuccessful trade has been assigned to redditor " + blame + ". ";
+			System.out.println("Banning an offending user!");
+			PreparedStatement ban = config.getJDBC().prepareStatement("select * from should_ban((select redditorid from redditors where username ilike ?),(select redditid from subreddits where subreddit ilike ?)) as ban;");
+			ban.setString(1, blame);
+			ban.setString(2, subreddit);
+			ResultSet banz = ban.executeQuery();
+			if (banz.first()) { 
+				banned = banz.getBoolean("ban");
+			}
+			banz.close();
+			
+			
+			if (banned) { 
+				ban(blame, subreddit, "Automatic ban from RedditTraders for exceeding at-fault unsuccessful trade limit.");
+				blameMessage = blameMessage + " Redditor /u/" + blame + " has been automatically banned from /r/" + subreddit + " for excessive at-fault unsuccessful trades.\n\n";
+			}
 		}
 		
-		String message = "Trade #" + id + " between " + user1 + " and " + user2 + " (" + url + ") has been resolved by the moderators of /r/" + subreddit + ". " + blameMessage + "The moderator's comments follow:\n\n" + comments.toString() + "\n\nThanks for using RedditTraders and being a part of the /r/" + subreddit + " community!\n\n\n";
+		String message = "Trade #" + id + " between " + user1 + " and " + user2 + " (" + url + ") has been resolved by the moderators of /r/" + subreddit + ". " + blameMessage + "The moderator's comments follow:\n\n" + comments.toString() + "\n\n\n";
 		StringBuffer m = new StringBuffer(message);
-		sendMessage(user1, "Trade Dispute Resolved", m);
-		sendMessage(user2, "Trade Dispute Resolved", m);
-		sendMessage("/r/" + subreddit, "Trade Dispute Resolved", m);
+		sendMessage(user1, "Trade Dispute Results", m);
+		sendMessage(user2, "Trade Dispute Results", m);
+		sendMessage("/r/" + subreddit, "Trade Dispute Results", m);
 	}
+	
+	/** 
+	 * Ban a user from the subreddit
+	 * @author Matt Holden (matt@mattholden.com)
+	 * @param user User to ban
+	 * @param sub subreddit to ban from
+	 * @param comment Reason for the ban	 
+	 * @throws ParseException 
+	 * @throws IOException 
+	 * @throws MalformedURLException 
+	 */
+	private void ban(String user, String subreddit, String comment) throws MalformedURLException, IOException, ParseException { 
+		String u = "http://www.reddit.com/api/friend";		
+        Utils.post("name=" + user + "&uh=" + config.getBotUser().getModhash() + "&type=banned&note=" + comment + "&r=" + subreddit, new URL(u), config.getBotUser().getCookie());          
+    	
+	}
+	
 	
 	/** 
 	 * Activate or deactivate the bot in a particular subreddit.
@@ -1096,7 +1267,7 @@ public class RedditTraders {
 	private void activate(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {		
 		
 		if (tokens.length < 3) { 
-			help(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}		
 		String sub = tokens[1].toLowerCase();
@@ -1146,7 +1317,7 @@ public class RedditTraders {
 	private void install(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 2) { 
-			help(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}
 		
