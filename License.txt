@@ -19,11 +19,11 @@ DEALINGS IN THE SOFTWARE.
 
 This application uses the following APIs under license:
 
-* JDOM (www.jdom.org) under an "Apache-like" license
-
-* JSON-Simple (http://code.google.com/p/json-simple/) under the Apache License 2.0
-
 * jReddit by Omer Elnour (https://bitbucket.org/_oe/jreddit) under the jReddit Attribution License
+* JSON-Simple (http://code.google.com/p/json-simple/) under the Apache License 2.0
+* Log4J (www.apache.org/log4j) under the Apache License 2.0
+* PostgreSQL JDBC Driver (jdbc.postgresql.org) under the BSD License
+* JDOM (www.jdom.org) under an "Apache-like" license
   
   
   

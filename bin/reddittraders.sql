@@ -158,7 +158,6 @@ insert into statuscodes (statusid, status) values (3, 'Unsuccessful');
 insert into statuscodes (statusid, status) values (4, 'Disputed');
 
 
-
 -- Table: subreddits
 
 -- DROP TABLE subreddits;
@@ -174,8 +173,6 @@ CREATE TABLE subreddits
   modflairclass character varying,
   textflair boolean NOT NULL DEFAULT false,
   activesub boolean NOT NULL DEFAULT true,
-  bandays integer NOT NULL DEFAULT 0,
-  banblames integer NOT NULL DEFAULT 0,
   CONSTRAINT subreddits_pkey PRIMARY KEY (redditid),
   CONSTRAINT subreddits_subreddit_key UNIQUE (subreddit)
 )
@@ -183,7 +180,6 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE subreddits OWNER TO postgres;
-
 
 
 -- Table: trades
@@ -202,8 +198,6 @@ CREATE TABLE trades
   threadurl character varying(1024) NOT NULL,
   unsuccessful_blame_redditorid integer,
   modcomments character varying(1024),
-  trade_date timestamp without time zone NOT NULL DEFAULT now(),
-  resolve_date timestamp without time zone,
   CONSTRAINT trades_pkey PRIMARY KEY (tradeid),
   CONSTRAINT trades_redditorid1_fkey FOREIGN KEY (redditorid1)
       REFERENCES redditors (redditorid) MATCH SIMPLE
@@ -222,6 +216,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE trades OWNER TO postgres;
+
 
 
 
@@ -396,86 +391,5 @@ end;
   LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION set_legacy(character varying, character varying, integer) OWNER TO postgres;
-
--- Function: get_unsuccessful_count(integer, integer)
-
--- DROP FUNCTION get_unsuccessful_count(integer, integer);
-
-CREATE OR REPLACE FUNCTION get_unsuccessful_count(prid integer, psubid integer)
-  RETURNS integer AS
-$BODY$
-
-  declare	
-	actual integer;
-	
-  begin
-	select into actual count(tradeid) from trades where (redditorid1 = prid or redditorid2 = prid) and subredditid = psubid and status = 3;
-	if actual is null then actual = 0; end if;
-	return actual;
-end;
- $BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION get_unsuccessful_count(integer, integer) OWNER TO postgres;
-
-
--- Function: get_blame_count(integer, integer)
-
--- DROP FUNCTION get_blame_count(integer, integer);
-
-CREATE OR REPLACE FUNCTION get_blame_count(prid integer, psubid integer)
-  RETURNS integer AS
-$BODY$
-
-  declare		
-	actual integer;
-	
-  begin
-	select into actual count(tradeid) from trades where unsuccessful_blame_redditorid = prid and subredditid = psubid and status = 3;	
-	if actual is null then actual = 0; end if;
-	return actual;
-end;
- $BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION get_blame_count(integer, integer) OWNER TO postgres;
-
-
--- Function: should_ban(integer, integer)
-
--- DROP FUNCTION should_ban(integer, integer);
-
-CREATE OR REPLACE FUNCTION should_ban(prid integer, psubid integer)
-  RETURNS boolean AS
-$BODY$
-
-  declare		
-	ban_blames integer;
-	ban_days integer;
-	countall boolean;
-	blamez integer;
-	
-  begin
-	select into ban_blames banblames from subreddits where redditid = psubid;
-	select into ban_days bandays from subreddits where redditid = psubid;
-	select into countall count_all_subreddits from subreddits where redditid = psubid;
-	
-	if (countall = true) then 
-		select into blamez count(tradeid) from trades where unsuccessful_blame_redditorid = prid and resolve_date >= (now() - ban_days * (interval '1 day'));
-	else
-		select into blamez count(tradeid) from trades where unsuccessful_blame_redditorid = prid and subredditid = psubid and resolve_date >= (now() - ban_days * (interval '1 day'));
-	end if;
-	
-	if (blamez >= ban_blames) then
-		return true;
-	else
-		return false;
-	end if;
-	
-end;
- $BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION should_ban(integer, integer) OWNER TO postgres;
 
 

@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import com.omrlnr.jreddit.messages.PrivateMessage;
 import com.omrlnr.jreddit.subreddit.Subreddit;
@@ -37,6 +38,10 @@ import com.omrlnr.jreddit.utils.Utils;
  */
 public class RedditTraders {
 
+	/** Log4J instance */
+	private final Logger LOG = Logger.getLogger(RedditTraders.class);
+	
+	
 	/** The Configuration information we will load from config.xml */
 	private Configuration config;
 	
@@ -62,8 +67,13 @@ public class RedditTraders {
 		String[] tokens = text.split("[ ]");				
 		
 		String command = tokens[0].toUpperCase();
-		System.out.println("Command: " + command);
+		LOG.debug("Command: " + command);
 		
+		// easter eggs...
+		if (command.equals("CAKE")) { 
+			response.append("I'm sorry, I'm all out of cake. How about some deadly neurotoxin?\n\n\n");
+			return true;
+		}
 		if (command.equals("HELP")) { 
 			help(pm, tokens, response);
 			return true;
@@ -983,7 +993,7 @@ public class RedditTraders {
 		}
 		set2.close();
 		if (flair == null) { 
-			System.out.println("No flair matching criteria for user.");
+			LOG.debug("No flair matching criteria for user.");
 			return;
 		}
 		
@@ -1207,7 +1217,7 @@ public class RedditTraders {
 		
 		if (blame != null)  { 
 			blameMessage = "Blame for the unsuccessful trade has been assigned to redditor " + blame + ". ";
-			System.out.println("Banning an offending user!");
+			LOG.debug("Banning an offending user!");
 			PreparedStatement ban = config.getJDBC().prepareStatement("select * from should_ban((select redditorid from redditors where username ilike ?),(select redditid from subreddits where subreddit ilike ?)) as ban;");
 			ban.setString(1, blame);
 			ban.setString(2, subreddit);
@@ -1360,22 +1370,23 @@ public class RedditTraders {
 	
 		try { 	
 			messages = config.getBotUser().getMessages("unread", 100);
-			//System.out.println("Found " + messages.size() + " new messages.");
+			//LOG.debug("Found " + messages.size() + " new messages.");
 		}
 		catch (Exception x) { 
-			x.printStackTrace();
+			LOG.error(x);
 			return;
 		}
 		
 		for (PrivateMessage pm : messages) { 
-			System.out.println("Received message from redditor " + pm.getAuthor() + ": "  + pm.getBody() + " // " + pm.getSubject());
+			LOG.debug("Received message from redditor " + pm.getAuthor() + ": "  + pm.getBody() + " // " + pm.getSubject());
 		
 			// Mark the message read
 			try {
 				pm.markRead(config.getBotUser(), true);
 							
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOG.error(e);
+				continue;
 			}
 			
 			boolean didSubject = false;
@@ -1385,8 +1396,9 @@ public class RedditTraders {
 			try {
 				didSubject = doCommand(pm, pm.getSubject(), response);
 			}
-			catch (Exception x) { 
-				x.printStackTrace();
+			catch (Exception x) {
+				LOG.error(x);
+				response.append("An unknown error occurred while processing this command:\n\n " + pm.getSubject() + "\n\n\n");
 			}
 			String[] body = pm.getBody().split("[\n]");
 			for (String s : body) { 
@@ -1396,7 +1408,8 @@ public class RedditTraders {
 					}
 				}
 				catch (Exception x) { 
-					x.printStackTrace();
+					response.append("An unknown error occurred while processing this command:\n\n " + s + "\n\n\n");
+					LOG.error(x);
 				}
 			}
 			
@@ -1405,7 +1418,8 @@ public class RedditTraders {
 					help(pm, body, response);
 				}
 				catch (Exception x) { 
-					x.printStackTrace();
+					response.append("An unknown error occurred while processing this command:\n\n " + body + "\n\n\n");
+					LOG.error(x);
 				}
 			}
 			
@@ -1413,11 +1427,8 @@ public class RedditTraders {
 				sendMessage(pm.getAuthor(), "RedditTraders Automated Message", response);
 			}
 			catch (Exception x) { 
-				x.printStackTrace();
+				LOG.error(x);
 			}
-			
-			
-			
 			
 		}
 	}
@@ -1492,7 +1503,7 @@ public class RedditTraders {
 	private boolean senderIsModerator(PrivateMessage msg, String[] tokens) throws MalformedURLException, IOException, ParseException { 
 		
 		String sender = msg.getAuthor();
-		System.out.println("Sender: " + sender);
+		LOG.debug("Sender: " + sender);
 		
 		if (tokens.length < 2) { 
 			return false;
@@ -1536,7 +1547,7 @@ public class RedditTraders {
 	 * @throws ParseException
 	 */
 	private void sendMessage(String user, String sub, StringBuffer body) throws MalformedURLException, IOException, ParseException {
-		System.out.println("Sending message " + sub + " to user " + user);
+		LOG.debug("Sending message " + sub + " to user " + user);
 		new PrivateMessage(user, sub, body.toString()).send(config.getBotUser());
 		
 	}
@@ -1571,7 +1582,7 @@ public class RedditTraders {
 		// Load XML configuration file, connect to DB and connect to Reddit API
 		try { 
 			config = new Configuration();
-			System.out.println("RedditTraders launched OK.");
+			LOG.debug("RedditTraders launched OK.");
 		}
 		catch (Exception x) { 
 			x.printStackTrace();

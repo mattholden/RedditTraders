@@ -1,5 +1,6 @@
 package com.darkenedsky.reddit.traders;
 import java.util.List;
+import org.apache.log4j.PropertyConfigurator;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -13,6 +14,9 @@ import com.darkenedsky.gemini.common.JDBCConnection;
  * @author Matt Holden (matt@mattholden.com) 
  * */
 public class Configuration {
+
+	/** Log4J instance */
+	private final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(Configuration.class);
 
 	/** The SAX Builder object used for string parsing */
 	private static SAXBuilder sax = new SAXBuilder();
@@ -45,6 +49,8 @@ public class Configuration {
 	 * @throws Exception
 	 */
 	public Configuration() throws Exception { 
+					
+			PropertyConfigurator.configure("log4j.properties");
 			Document doc = null;
 			doc = sax.build("config.xml");
 			Element e = doc.getRootElement();
@@ -70,17 +76,17 @@ public class Configuration {
 					sleepSec = Integer.parseInt(sec);
 				}
 				catch (NumberFormatException x) { 
-					
+					LOG.warn("Could not parse Configuration <sleepsec> element, using defaults.");
 				}
 			}
 			sec = getString(e, "apicalls_beforesleep");
-			int x = 0, y = 0;
+			int x = 30, y = 60;
 			if (sec != null) { 
 				try { 
 					x = Integer.parseInt(sec);
 				}
 				catch (NumberFormatException xs) { 
-					
+					LOG.warn("Could not parse Configuration <apicalls_beforesleep> element, using defaults.");
 				}
 			}
 			sec = getString(e, "sleep_after_call_limit_sec");
@@ -89,7 +95,7 @@ public class Configuration {
 					y = Integer.parseInt(sec);
 				}
 				catch (NumberFormatException xs) { 
-					
+					LOG.warn("Could not parse Configuration <sleep_after_call_limit_sec> element, using defaults.");
 				}
 			}
 			Utils.setAPICallSafety(x, y);

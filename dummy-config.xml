@@ -1,0 +1,25 @@
+<reddittraders>
+	
+	<version>1.00</version>
+	<author>JaedenStormes</author>
+	<supportreddit>RedditTraders</supportreddit>
+	<supportemail>jaedenstormes@reddittraders.com</supportemail>
+	<sleepsec>20</sleepsec>
+	<apicalls_beforesleep>30</apicalls_beforesleep>
+	<sleep_after_call_limit_sec>60</sleep_after_call_limit_sec>
+	
+	<database>
+		<user>DB_USER_HERE</user>
+		<password>DB_PASSWORD_HERE</password>
+		<path>jdbc:postgresql://DB_SERVER/DB_DATABASE</path>
+		<driver>org.postgresql.Driver</driver>
+	</database>
+	
+	<reddit_user_agent>RedditTraders.com</reddit_user_agent>
+	
+	<reddit_account>
+		<user>REDDIT-USERNAME</user>
+		<password>REDDIT-PASSWORD</password>
+	</reddit_account>
+	
+</reddittraders>
