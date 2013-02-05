@@ -168,7 +168,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void help(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 
+	public void  help(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 
 			
 		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Command Usage*\n\n");
 		sb.append("--------------------------------------------------------------\n\n");		
@@ -197,7 +197,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void modHelp(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 		
+	public void  modHelp(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 		
 		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Moderator Command Usage*\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
 		sb.append("INSTALL: Install the RedditTraders bot for a subreddit. \n\n* Usage: INSTALL [subreddit]\n\n* Example: INSTALL retrogameswap\n\n");
@@ -232,7 +232,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void about(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 
+	public void  about(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException { 
 			
 		String cDate = "2013";
 		int yr = Calendar.getInstance().get(Calendar.YEAR);
@@ -266,7 +266,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void viewFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
+	public void  viewFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 2) { 
 			modHelp(msg, tokens, sb);
@@ -304,7 +304,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void setModFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
+	public void  setModFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		
 		String flair = null;
 		
@@ -352,7 +352,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void setFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
+	public void  setFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 	
 		
 		String flair = null;
@@ -414,7 +414,7 @@ public class RedditTraders {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	private void countAllSubreddits(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
+	public void  countAllSubreddits(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 3) { 
 			modHelp(msg, tokens, sb);
 			return;
@@ -446,7 +446,7 @@ public class RedditTraders {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	private void setBlameBan(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
+	public void  setBlameBan(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 4) { 
 			modHelp(msg, tokens, sb);
 			return;
@@ -493,7 +493,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void setTextFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
+	public void  setTextFlair(PrivateMessage msg, String[] tokens, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 3) { 
 			modHelp(msg, tokens, sb);
 			return;
@@ -527,7 +527,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void setLegacy(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
+	public void  setLegacy(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 4) { 
 			modHelp(msg, tokens, sb);
@@ -583,7 +583,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void lookup(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
+	public void  lookup(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		if (tokens.length < 2) { 
 			help(msg, tokens, sb);
 			return;
@@ -671,7 +671,7 @@ public class RedditTraders {
 			sb.append(unsuccessful.get(s) + " unsuccessful (" + renderPct(unsuccessful.get(s), totals.get(s)) + "), "); 
 			sb.append(blamed.get(s) + " at-fault (" + renderPct(blamed.get(s), totals.get(s)) + ")\n\n"); 
 		}
-		sb.append("------------------------------------------------------\n\nTotal successful trades: "+ totalTotal +" (" + renderPct(totalSuccess, totalTotal) + " )\n\n");
+		sb.append("------------------------------------------------------\n\nTotal successful trades: "+ totalTotal +" (" + renderPct(totalSuccess, totalTotal) + ")\n\n");
 		sb.append("Total unsuccessful trades: "+ totalUnsuccess +" (" + renderPct(totalUnsuccess, totalTotal) + ") \n\n");
 		sb.append("Total at-fault unsuccessful trades: "+ totalBlame +" (" + renderPct(totalBlame, totalTotal) + ") \n\n");
 				
@@ -706,7 +706,7 @@ public class RedditTraders {
 	 * @throws ParseException
 	 * @throws SQLException
 	 */
-	private void trade(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
+	public void  trade(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		if (tokens.length < 3) { 
 			help(msg, tokens, sb);
 			return;
@@ -816,7 +816,7 @@ public class RedditTraders {
 	 * Get a list of the top traders in a given subreddit
 	 * 
 	 * 
-	 * @param msg		The private message received from the user.
+	 * @param pm		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
 	 * @param count 	The number of traders you want to see
 	 * @param sb		The StringBuffer to write any response text out to the user
@@ -826,7 +826,7 @@ public class RedditTraders {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	private void topTraders(PrivateMessage pm, String[] tokens, int count, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
+	public void  topTraders(PrivateMessage pm, String[] tokens, int count, StringBuffer sb) throws SQLException, MalformedURLException, IOException, ParseException { 
 		
 		if (tokens.length < 2) { 
 			help(pm, tokens, sb);
@@ -863,7 +863,7 @@ public class RedditTraders {
 	 * Confirm that a trade has been successful. Will update all data for the trade as well as assign flair.
 	 * 
 	 * 
-	 * @param msg		The private message received from the user.
+	 * @param pm		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
 	 * @param sb		The StringBuffer to write any response text out to the user
 	 * 
@@ -872,7 +872,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void confirm(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
+	public void  confirm(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
 		
 		if (tokens.length < 2) { 
 			help(pm, tokens, sb);
@@ -968,7 +968,7 @@ public class RedditTraders {
 	 * @throws ParseException
 	 * @throws SQLException
 	 */
-	private void setUserFlair(String user, String subreddit, boolean doTextFlair) throws SQLException, MalformedURLException, IOException, ParseException { 
+	public void  setUserFlair(String user, String subreddit, boolean doTextFlair) throws SQLException, MalformedURLException, IOException, ParseException { 
 	
 		int trades = 0;
 		String flair = null;
@@ -1021,7 +1021,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void dispute(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
+	public void  dispute(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
 		
 		if (tokens.length < 2) { 
 			help(pm, tokens, sb);
@@ -1099,7 +1099,7 @@ public class RedditTraders {
 	 * Moderator function to resolve a disputed trade, optimally assigning blame to one user or the other 
 	 * 
 	 * 
-	 * @param msg		The private message received from the user.
+	 * @param pm		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
 	 * @param sb		The StringBuffer to write any response text out to the user
 	 * 
@@ -1108,7 +1108,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void resolve(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
+	public void  resolve(PrivateMessage pm, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {
 		
 		if (tokens.length < 2) { 
 			modHelp(pm, tokens, sb);
@@ -1245,13 +1245,13 @@ public class RedditTraders {
 	 * Ban a user from the subreddit
 	 * 
 	 * @param user User to ban
-	 * @param sub subreddit to ban from
+	 * @param subreddit subreddit to ban from
 	 * @param comment Reason for the ban	 
 	 * @throws ParseException 
 	 * @throws IOException 
 	 * @throws MalformedURLException 
 	 */
-	private void ban(String user, String subreddit, String comment) throws MalformedURLException, IOException, ParseException { 
+	private void  ban(String user, String subreddit, String comment) throws MalformedURLException, IOException, ParseException { 
 		String u = "http://www.reddit.com/api/friend";		
         Utils.post("name=" + user + "&uh=" + config.getBotUser().getModhash() + "&type=banned&note=" + comment + "&r=" + subreddit, new URL(u), config.getBotUser().getCookie());          
     	
@@ -1274,7 +1274,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void activate(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {		
+	public void  activate(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException {		
 		
 		if (tokens.length < 3) { 
 			modHelp(msg, tokens, sb);
@@ -1324,7 +1324,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void install(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
+	public void  install(PrivateMessage msg, String[] tokens, StringBuffer sb) throws MalformedURLException, IOException, ParseException, SQLException { 
 		
 		if (tokens.length < 2) { 
 			modHelp(msg, tokens, sb);
@@ -1365,7 +1365,7 @@ public class RedditTraders {
 	 * Called in a loop every so many seconds to get messages and run any commands found within them. 
 	 * 
 	 */
-	private void process() {
+	public void  process() {
 		List<PrivateMessage> messages = null;
 	
 		try { 	
@@ -1437,14 +1437,14 @@ public class RedditTraders {
 	 * Parses a message inviting the bot to become moderator of a subreddit, and accepts it 
 	 * 
 	 * 
-	 * @param msg		The private message received from the user.
+	 * @param pm		The private message received from the user.
 	 * @param tokens	The individual "words" of the command we are executing
 	 * 
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void acceptModeratorInvite(PrivateMessage pm, String[] tokens) throws MalformedURLException, IOException, ParseException { 
+	public void  acceptModeratorInvite(PrivateMessage pm, String[] tokens) throws MalformedURLException, IOException, ParseException { 
 		if (tokens.length < 10) { 
 			return;
 		}
@@ -1546,7 +1546,7 @@ public class RedditTraders {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void sendMessage(String user, String sub, StringBuffer body) throws MalformedURLException, IOException, ParseException {
+	public void  sendMessage(String user, String sub, StringBuffer body) throws MalformedURLException, IOException, ParseException {
 		LOG.debug("Sending message " + sub + " to user " + user);
 		new PrivateMessage(user, sub, body.toString()).send(config.getBotUser());
 		

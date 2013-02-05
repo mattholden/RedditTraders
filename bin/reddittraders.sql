@@ -3,72 +3,6 @@
  
  
  
- -- Sequence: flairtemplates_flairtemplateid_seq
- 
- -- DROP SEQUENCE flairtemplates_flairtemplateid_seq;
- 
- CREATE SEQUENCE flairtemplates_flairtemplateid_seq
-   INCREMENT 1
-   MINVALUE 1
-   MAXVALUE 9223372036854775807
-   START 18
-   CACHE 1;
- ALTER TABLE flairtemplates_flairtemplateid_seq OWNER TO postgres;
- 
- 
- -- Sequence: legacytrades_legacyid_seq
- 
- -- DROP SEQUENCE legacytrades_legacyid_seq;
- 
- CREATE SEQUENCE legacytrades_legacyid_seq
-   INCREMENT 1
-   MINVALUE 1
-   MAXVALUE 9223372036854775807
-   START 3
-   CACHE 1;
- ALTER TABLE legacytrades_legacyid_seq OWNER TO postgres;
- 
- 
- -- Sequence: redditors_redditorid_seq
- 
- -- DROP SEQUENCE redditors_redditorid_seq;
- 
- CREATE SEQUENCE redditors_redditorid_seq
-   INCREMENT 1
-   MINVALUE 1
-   MAXVALUE 9223372036854775807
-   START 7
-   CACHE 1;
- ALTER TABLE redditors_redditorid_seq OWNER TO postgres;
- 
- 
- -- Sequence: subreddits_redditid_seq
- 
- -- DROP SEQUENCE subreddits_redditid_seq;
- 
- CREATE SEQUENCE subreddits_redditid_seq
-   INCREMENT 1
-   MINVALUE 1
-   MAXVALUE 9223372036854775807
-   START 5
-   CACHE 1;
- ALTER TABLE subreddits_redditid_seq OWNER TO postgres;
- 
- 
- -- Sequence: trades_tradeid_seq
- 
- -- DROP SEQUENCE trades_tradeid_seq;
- 
- CREATE SEQUENCE trades_tradeid_seq
-   INCREMENT 1
-   MINVALUE 112647
-   MAXVALUE 9223372036854775807
-   START 15
-   CACHE 1;
- ALTER TABLE trades_tradeid_seq OWNER TO postgres;
-
-
-
  
  -- Table: flairtemplates
  
@@ -478,4 +412,66 @@ end;
   COST 100;
 ALTER FUNCTION should_ban(integer, integer) OWNER TO postgres;
 
+-- Function: set_flair(character varying, integer, character varying)
 
+-- DROP FUNCTION set_flair(character varying, integer, character varying);
+
+CREATE OR REPLACE FUNCTION set_flair(psubreddit character varying, pmin integer, pflair character varying)
+  RETURNS void AS
+$BODY$
+
+  declare	
+	subid integer;
+	flairid integer;
+  begin
+      
+	select into subid redditid from subreddits where subreddit ilike psubreddit;
+	select into flairid flairtemplateid from flairtemplates where subredditid = subid and mintrades = pmin;
+
+	-- not there, must be an insert
+	if (flairid is null and pflair is not null) then
+		insert into flairtemplates (subredditid, mintrades, flairclass) values (subid, pmin, pflair);
+	else 
+		-- could be a delete or an update
+		if (pflair is null) then
+			delete from flairtemplates where subredditid = subid and mintrades = pmin;
+		else
+			update flairtemplates set flairclass = pflair where subredditid = subid and mintrades = pmin;
+		end if;
+	end if;
+
+end;
+ $BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION set_flair(character varying, integer, character varying) OWNER TO postgres;
+
+grant all on table flairtemplates to reddittraders;
+grant select on table legacytrades to reddittraders;
+grant insert on table legacytrades to reddittraders;
+grant update on table legacytrades to reddittraders;
+grant select on table redditors to reddittraders;
+grant insert on table redditors to reddittraders;
+grant update on table redditors to reddittraders;
+grant select on table statuscodes to reddittraders;
+grant select on table subreddits to reddittraders;
+grant insert on table subreddits to reddittraders;
+grant update on table subreddits to reddittraders;
+grant select on table trades to reddittraders;
+grant insert on table trades to reddittraders;
+grant update on table trades to reddittraders;
+grant all on sequence flairtemplates_flairtemplateid_seq to reddittraders;
+grant all on sequence legacytrades_legacyid_seq to reddittraders;
+grant all on sequence redditors_redditorid_seq to reddittraders;
+grant all on sequence subreddits_redditid_seq to reddittraders;
+grant all on sequence trades_tradeid_seq to reddittraders;
+grant execute on FUNCTION get_blame_count(prid integer, psubid integer) to reddittraders;
+grant execute on FUNCTION get_flair_class(puser character varying, psubreddit character varying, pismod boolean) to reddittraders;
+grant execute on FUNCTION get_or_create_user(puser character varying) to reddittraders;
+grant execute on FUNCTION get_trade_count(prid integer, psubid integer) to reddittraders;
+grant execute on FUNCTION get_trade_count_with_countall(prid integer, psubid integer) to reddittraders;
+grant execute on FUNCTION get_unsuccessful_count(prid integer, psubid integer) to reddittraders;
+grant execute on FUNCTION insert_trade(puser1 character varying, puser2 character varying, psub character varying, purl character varying, pcomments character varying) to reddittraders;
+grant execute on FUNCTION set_legacy(puser character varying, psub character varying, ptrades integer) to reddittraders;
+grant execute on FUNCTION should_ban(prid integer, psubid integer) to reddittraders;
+grant execute on function set_flair(character varying, integer, character varying) to reddittraders;
