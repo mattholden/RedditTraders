@@ -47,8 +47,10 @@ public class Trade extends RedditListener {
 		String url = tokens[2];
 
 		StringBuffer comments = new StringBuffer();
-		for (int i = 3; i < tokens.length; i++) {
-			comments.append(tokens[i] + " ");
+		if (tokens.length > 3) {
+			for (int i = 3; i < tokens.length; i++) {
+				comments.append(tokens[i] + " ");
+			}
 		}
 
 		/* Now, let's do some safety checks... */
