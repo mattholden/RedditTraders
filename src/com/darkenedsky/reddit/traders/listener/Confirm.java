@@ -8,6 +8,8 @@ import java.sql.SQLException;
 
 import com.darkenedsky.reddit.traders.RedditTraders;
 import com.omrlnr.jreddit.messages.PrivateMessage;
+import com.omrlnr.jreddit.user.User;
+import com.omrlnr.jreddit.user.UserInfo;
 
 public class Confirm extends RedditListener {
 
@@ -59,6 +61,9 @@ public class Confirm extends RedditListener {
 		int status = -1;
 		boolean textFlair = false;
 
+		long minAccountAge = 0;
+		boolean requireVerified = false;
+
 		PreparedStatement p1 = config.getJDBC().prepareStatement("select * from redditors  join trades on (trades.redditorid1 = redditors.redditorid) join subreddits on (subreddits.redditid = trades.subredditid) where tradeid = ?;");
 		p1.setInt(1, id);
 		ResultSet rs1 = p1.executeQuery();
@@ -68,6 +73,9 @@ public class Confirm extends RedditListener {
 			subreddit = rs1.getString("subreddit");
 			url = rs1.getString("threadurl");
 			status = rs1.getInt("status");
+			requireVerified = rs1.getBoolean("require_verified_email");
+			minAccountAge = rs1.getLong("min_account_age_sec");
+
 		} else {
 			sb.append("CONFIRM error: An unknown database error has occurred.\n\n\n");
 			rs1.close();
@@ -77,6 +85,26 @@ public class Confirm extends RedditListener {
 
 		if (status == 2 || status == 3) {
 			sb.append("CONFIRM error: Trade #" + id + " is already complete and may not be modified.\n\n\n");
+			return;
+		}
+
+		// check account age of the requestor.
+		UserInfo info = User.about(pm.getAuthor());
+		long created = (long) info.getCreatedUTC();
+		long age = System.currentTimeMillis() - created;
+		long ageSec = age / 1000;
+		boolean verified = info.isVerifiedEmail();
+
+		// ignoring difference between UTC and our timezone; this is close
+		// enough
+		if (ageSec < minAccountAge) {
+			long days = (((minAccountAge / 24) / 60) / 60);
+			sb.append("CONFIRM error: Your account must be at least " + days + " days old to register trades on subreddit /r/" + subreddit + ".\n\n\n");
+			return;
+		}
+
+		if (!verified && requireVerified) {
+			sb.append("CONFIRM error: Accounts must have verified email addresses on Reddit to register trades on subreddit /r/" + subreddit + ".\n\n\n");
 			return;
 		}
 

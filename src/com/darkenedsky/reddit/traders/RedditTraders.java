@@ -35,12 +35,14 @@ import com.darkenedsky.reddit.traders.listener.Lookup;
 import com.darkenedsky.reddit.traders.listener.ModHelp;
 import com.darkenedsky.reddit.traders.listener.RedditListener;
 import com.darkenedsky.reddit.traders.listener.Resolve;
+import com.darkenedsky.reddit.traders.listener.SetAccountAgeRequirement;
 import com.darkenedsky.reddit.traders.listener.SetBlameBan;
 import com.darkenedsky.reddit.traders.listener.SetFlair;
 import com.darkenedsky.reddit.traders.listener.SetLegacy;
 import com.darkenedsky.reddit.traders.listener.SetList;
 import com.darkenedsky.reddit.traders.listener.SetModFlair;
 import com.darkenedsky.reddit.traders.listener.SetTextFlair;
+import com.darkenedsky.reddit.traders.listener.SetVerifiedEmail;
 import com.darkenedsky.reddit.traders.listener.TopTraders;
 import com.darkenedsky.reddit.traders.listener.Trade;
 import com.darkenedsky.reddit.traders.listener.ViewFlair;
@@ -141,6 +143,8 @@ public class RedditTraders {
 			listeners.put("SETHAVELIST", new SetList(this));
 			addListener(new GetList(this));
 			listeners.put("HAVELIST", new GetList(this));
+			addListener(new SetAccountAgeRequirement(this));
+			addListener(new SetVerifiedEmail(this));
 
 			// Build a system tray icon
 			SystemTray tray = SystemTray.getSystemTray();

@@ -9,6 +9,8 @@ import java.sql.SQLException;
 
 import com.darkenedsky.reddit.traders.RedditTraders;
 import com.omrlnr.jreddit.messages.PrivateMessage;
+import com.omrlnr.jreddit.user.User;
+import com.omrlnr.jreddit.user.UserInfo;
 import com.omrlnr.jreddit.utils.Utils;
 
 public class Trade extends RedditListener {
@@ -86,6 +88,9 @@ public class Trade extends RedditListener {
 			return;
 		}
 
+		long minAccountAge = 0;
+		boolean requireVerified = false;
+
 		// make sure the row is there and active
 		PreparedStatement act = config.getJDBC().prepareStatement("select * from subreddits where activesub=true and subreddit ilike ?;");
 		act.setString(1, subreddit);
@@ -94,12 +99,35 @@ public class Trade extends RedditListener {
 			actsub.close();
 			sb.append("TRADE error: This bot is not currently configured to actively monitor trades on subreddit /r/" + subreddit + ".\n\n\n");
 			return;
+		} else {
+			minAccountAge = actsub.getLong("min_account_age_sec");
+			requireVerified = actsub.getBoolean("require_verified_email");
 		}
 		actsub.close();
 
 		// Make sure we're a moderator of the subreddit
 		if (!instance.botIsModerator(subreddit)) {
 			sb.append("TRADE error: This bot is not currently configured to actively monitor trades on subreddit /r/" + subreddit + ".\n\n\n");
+			return;
+		}
+
+		// check account age of the requestor.
+		UserInfo info = User.about(msg.getAuthor());
+		long created = (long) info.getCreatedUTC();
+		long age = System.currentTimeMillis() - created;
+		long ageSec = age / 1000;
+		boolean verified = info.isVerifiedEmail();
+
+		// ignoring difference between UTC and our timezone; this is close
+		// enough
+		if (ageSec < minAccountAge) {
+			long days = (((minAccountAge / 24) / 60) / 60);
+			sb.append("TRADE error: Your account must be at least " + days + " days old to register trades on subreddit /r/" + subreddit + ".\n\n\n");
+			return;
+		}
+
+		if (!verified && requireVerified) {
+			sb.append("TRADE error: Accounts must have verified email addresses on Reddit to register trades on subreddit /r/" + subreddit + ".\n\n\n");
 			return;
 		}
 
