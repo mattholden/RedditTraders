@@ -40,7 +40,7 @@ public class Activate extends RedditListener {
 	public void process(PrivateMessage msg, String[] tokens, StringBuffer sb) throws Exception {
 
 		if (tokens.length < 3) {
-			instance.getModHelp().process(msg, tokens, sb);
+			modHelp(msg, tokens, sb);
 			return;
 		}
 		String sub = tokens[1].toLowerCase();

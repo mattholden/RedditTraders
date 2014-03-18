@@ -1,5 +1,13 @@
 package com.darkenedsky.reddit.traders;
 
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -122,6 +130,25 @@ public class RedditTraders {
 			addListener(new SetModFlair(this));
 			listeners.put("REMOVEMODFLAIR", new SetModFlair(this));
 			addListener(new SetBlameBan(this));
+
+			// Build a system tray icon
+			SystemTray tray = SystemTray.getSystemTray();
+
+			PopupMenu popup = new PopupMenu();
+			MenuItem defaultItem = new MenuItem("Exit");
+			ActionListener exitListener = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.exit(0);
+				}
+			};
+			defaultItem.addActionListener(exitListener);
+			popup.add(defaultItem);
+
+			Image image = Toolkit.getDefaultToolkit().getImage("reddit.png");
+			TrayIcon trayIcon = new TrayIcon(image, "RedditTraders " + config.getVersion(), popup);
+			trayIcon.setImageAutoSize(true);
+			tray.add(trayIcon);
 
 			LOG.debug("RedditTraders launched OK.");
 		} catch (Exception x) {
