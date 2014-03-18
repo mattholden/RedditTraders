@@ -38,7 +38,7 @@ public class Help extends RedditListener {
 		sb.append("HELP: Receive this message. \n\n* Usage: HELP\n\n* Example: HELP\n\n");
 		sb.append("MODHELP: Receive a list of commands for moderators only. \n\n* Usage: MODHELP\n\n* Example: MODHELP\n\n");
 		sb.append("LOOKUP: Lookup a redditor's trading history. \n\n* Usage: LOOKUP [redditor name]\n\n* Example: LOOKUP RedditTraders\n\n");
-		sb.append("TRADE: Initiate a report of a successful trade.\n\n* Usage: TRADE [Redditor's name you traded with] [Trade thread URL] [OPTIONAL: Comments]\n\n* Example: TRADE RedditTraders http://www.reddit.com/r/retrogameswap/comments/178tq4/trade_la_la/ Optional comments go here\n\n");
+		sb.append("TRADE: Initiate a report of a successful trade.\n\n* Usage: TRADE [Redditor's name you traded with] [Trade thread URL] [Comments]\n\n* Example: TRADE RedditTraders http://www.reddit.com/r/retrogameswap/comments/178tq4/trade_la_la/ Comments go here\n\n");
 		sb.append("CONFIRM: Confirm that a trade was successful.\n\n* Usage: CONFIRM [trade id]\n\n* Example: CONFIRM 8675309\n\n");
 		sb.append("DISPUTE: Dispute that a trade was successful. *This will notify the mods.*\n\n* Usage: DISPUTE [trade id]\n\n* Example: DISPUTE 8675309\n\n");
 		sb.append("TOP20: Get the top 20 traders for a subreddit.\n\n* Usage: TOP20 [subreddit]\n\n* Example: TOP20 retrogameswap\n\n");
