@@ -135,15 +135,29 @@ public class RedditTraders {
 			SystemTray tray = SystemTray.getSystemTray();
 
 			PopupMenu popup = new PopupMenu();
-			MenuItem defaultItem = new MenuItem("Exit");
+
+			MenuItem todaysLog = new MenuItem("Today's Log");
+			todaysLog.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						new TextFrame("logs/RedditTraders.log").setVisible(true);
+					} catch (Exception e1) {
+						LOG.error(e1);
+					}
+				}
+			});
+			popup.add(todaysLog);
+
+			MenuItem exit = new MenuItem("Exit");
 			ActionListener exitListener = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					System.exit(0);
 				}
 			};
-			defaultItem.addActionListener(exitListener);
-			popup.add(defaultItem);
+			exit.addActionListener(exitListener);
+			popup.add(exit);
 
 			Image image = Toolkit.getDefaultToolkit().getImage("reddit.png");
 			TrayIcon trayIcon = new TrayIcon(image, "RedditTraders " + config.getVersion(), popup);
