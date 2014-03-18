@@ -13,8 +13,6 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-
-import com.omrlnr.jreddit.messages.PrivateMessage;
 import com.omrlnr.jreddit.user.User;
 import com.omrlnr.jreddit.utils.Utils;
 
@@ -252,6 +250,9 @@ public class Subreddit {
      */
     public boolean isNSFW() {
         return nsfw;
+        
+        
+        
     }
     
     public List<String> getModerators(User usr) throws MalformedURLException, IOException, ParseException { 
@@ -260,6 +261,7 @@ public class Subreddit {
         	
         	String u = "http://www.reddit.com/r/" + this.getDisplayName() +"/about/moderators.json";
             JSONObject object = (JSONObject) Utils.get("", new URL(u), usr.getCookie());
+        
             
             JSONObject data = (JSONObject) object.get("data");
             JSONArray children = (JSONArray) data.get("children");

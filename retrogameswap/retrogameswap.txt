@@ -1,0 +1,343 @@
+setlegacy retrogameswap baba_ganoush 1
+setlegacy retrogameswap cogburn 1
+setlegacy retrogameswap indoze 3
+setlegacy retrogameswap elusivesora 5
+setlegacy retrogameswap pezdeath 4
+setlegacy retrogameswap madeforteavea 2
+setlegacy retrogameswap mauzy 7
+setlegacy retrogameswap dmoneater 1
+setlegacy retrogameswap teamshread 45
+setlegacy retrogameswap solidassnake 5
+setlegacy retrogameswap wackymayor 3
+setlegacy retrogameswap freshtilldeath 2
+setlegacy retrogameswap automaticfungu 1
+setlegacy retrogameswap andresjsharks 1
+setlegacy retrogameswap marxychick1 1
+setlegacy retrogameswap digitalmordecai 1
+setlegacy retrogameswap g4m3f4c3 2
+setlegacy retrogameswap switzx 1
+setlegacy retrogameswap killernerd420 4
+setlegacy retrogameswap ograsshopper 1
+setlegacy retrogameswap campmoore 1
+setlegacy retrogameswap viledisgorgement 3
+setlegacy retrogameswap inkelevon 1
+setlegacy retrogameswap magicpantsmachine 1
+setlegacy retrogameswap xljj42 4
+setlegacy retrogameswap neganti 1
+setlegacy retrogameswap platypuscandy 3
+setlegacy retrogameswap seg-fault 2
+setlegacy retrogameswap wellingtonbear 4
+setlegacy retrogameswap zegota 6
+setlegacy retrogameswap thewalrustoo 1
+setlegacy retrogameswap irishunion 2
+setlegacy retrogameswap mirkky 1
+setlegacy retrogameswap craywolf 2
+setlegacy retrogameswap grrmuffins 2
+setlegacy retrogameswap housethemous 6
+setlegacy retrogameswap devineprime 1
+setlegacy retrogameswap mistergnome 1
+setlegacy retrogameswap themighty13 1
+
+setlegacy retrogameswap aggregarrett 1
+setlegacy retrogameswap itsant 1
+setlegacy retrogameswap narnar_the_dragon 1
+setlegacy retrogameswap richard_b_riddick 1
+setlegacy retrogameswap calibur3d 2
+setlegacy retrogameswap solebot 1
+setlegacy retrogameswap rokushiki 2
+setlegacy retrogameswap atebitgypsy 1
+
+setlegacy retrogameswap atomicpowerrobot 9
+setlegacy retrogameswap Viledisgorgement 1
+setlegacy retrogameswap geo1234 1
+setlegacy retrogameswap thegnome54 1
+setlegacy retrogameswap bluechaka 21
+setlegacy retrogameswap zerobeast2 2
+setlegacy retrogameswap crabpeople69 2
+setlegacy retrogameswap nickthegreat 1
+
+setlegacy retrogameswap krugo 2
+setlegacy retrogameswap darkkobold 4
+setlegacy retrogameswap lordloss 9
+setlegacy retrogameswap Emleaux 2
+setlegacy retrogameswap rushofblood52 1
+setlegacy retrogameswap friskykillface 5
+setlegacy retrogameswap bob_chiquita 1
+setlegacy retrogameswap mathewryan 1
+
+setlegacy retrogameswap crystal_methodist 1
+setlegacy retrogameswap occ4m 4
+setlegacy retrogameswap mist0 2
+setlegacy retrogameswap toasterovenly 1
+setlegacy retrogameswap mooseeatsbear 1
+setlegacy retrogameswap jaybitalls 3
+setlegacy retrogameswap adrianoo 5
+setlegacy retrogameswap bobula 1
+
+setlegacy retrogameswap maverickrenegade 31
+setlegacy retrogameswap texasbabymunch 1
+setlegacy retrogameswap mattryansd 15
+setlegacy retrogameswap souletr 2
+setlegacy retrogameswap kc0n 15
+setlegacy retrogameswap butthurtthesequel 2
+setlegacy retrogameswap throwawaypete 1
+setlegacy retrogameswap interwhos 2
+
+setlegacy retrogameswap zachthepimp 1
+setlegacy retrogameswap alexsyc11 15
+setlegacy retrogameswap steamnoob 1
+setlegacy retrogameswap novalaw 1
+setlegacy retrogameswap lulz_zero 1
+setlegacy retrogameswap retr0gamer 2
+setlegacy retrogameswap phiberosmosis 1
+setlegacy retrogameswap stryfehiro 1
+
+setlegacy retrogameswap undeadargos 1
+setlegacy retrogameswap unknownarchive 2
+setlegacy retrogameswap wmf9797 1
+setlegacy retrogameswap amcc4056 2
+setlegacy retrogameswap wavingflags2 3
+setlegacy retrogameswap shulamana 1
+setlegacy retrogameswap gnarlyneeks 1
+
+setlegacy retrogameswap anemptylake 1
+setlegacy retrogameswap MustyBuckets 2
+setlegacy retrogameswap jaxspop 1
+setlegacy retrogameswap LudwigLobsters 2
+setlegacy retrogameswap abachon 1
+setlegacy retrogameswap Whambamm 3
+setlegacy retrogameswap keeegan 2
+
+setlegacy retrogameswap pwnwalljackson 1
+setlegacy retrogameswap doctorbrony 3
+setlegacy retrogameswap ishkabibbel2000 3
+setlegacy retrogameswap jonisrules 17
+setlegacy retrogameswap pohtaytoez_trades 2
+setlegacy retrogameswap tempest123 1
+setlegacy retrogameswap cato242 6
+setlegacy retrogameswap packerschris 1
+
+setlegacy retrogameswap Novaaa13 3
+setlegacy retrogameswap kaysol 6
+setlegacy retrogameswap Extreme-Eagle 18
+setlegacy retrogameswap person749 12
+setlegacy retrogameswap madusa77 1
+setlegacy retrogameswap lufty 2
+setlegacy retrogameswap shadowFXD 1
+setlegacy retrogameswap david706 1
+
+setlegacy retrogameswap dischord76 1
+setlegacy retrogameswap larsskynyrd79 3
+setlegacy retrogameswap ozzbad 6
+setlegacy retrogameswap steelgeneral 1
+setlegacy retrogameswap bennymata 1
+setlegacy retrogameswap masterkenobiwan 3
+setlegacy retrogameswap wowbobwow 3
+
+setlegacy retrogameswap monthlymarmot 3
+setlegacy retrogameswap edudlive 1
+setlegacy retrogameswap roycisneros 1
+setlegacy retrogameswap truond 10
+setlegacy retrogameswap n_kazia 1
+setlegacy retrogameswap xnocturnalginger 2
+setlegacy retrogameswap ray229harris 1
+setlegacy retrogameswap smfrrr 1
+
+setlegacy retrogameswap egotisticalmoron 1
+setlegacy retrogameswap tunatartarist 3
+setlegacy retrogameswap uberdeathturtle 1
+setlegacy retrogameswap precociouslilscam 1
+setlegacy retrogameswap youlovetonyt 1
+setlegacy retrogameswap iscorama 7
+setlegacy retrogameswap tooshorty 3
+setlegacy retrogameswap millidooms 5
+
+setlegacy retrogameswap DammitChris 7
+setlegacy retrogameswap nylon326 1
+setlegacy retrogameswap Jonathan_Switcher 12
+setlegacy retrogameswap shymog 4
+setlegacy retrogameswap prowlahx083 1
+setlegacy retrogameswap spooby54 1
+setlegacy retrogameswap thatwontdopig 2
+setlegacy retrogameswap visiblecunt 1
+setlegacy retrogameswap xrCore 1
+
+setlegacy retrogameswap xer0449 5
+setlegacy retrogameswap retrori 1
+setlegacy retrogameswap Impossibrufan 3
+setlegacy retrogameswap caten7 1
+setlegacy retrogameswap toilet_duck 1
+setlegacy retrogameswap danvader 1
+setlegacy retrogameswap geoff_the_great 3
+setlegacy retrogameswap jaedenstormes 1
+
+setlegacy retrogameswap gamefreak2600 1
+setlegacy retrogameswap dancingtosirens 1
+setlegacy retrogameswap gaffgarion 1
+setlegacy retrogameswap GaijinFoot 1
+setlegacy retrogameswap spoonybardgl 3
+setlegacy retrogameswap 559955 1
+setlegacy retrogameswap Soda 1
+setlegacy retrogameswap spyler87 2
+
+setlegacy retrogameswap CaptMcButternut 1
+setlegacy retrogameswap figro58 1
+setlegacy retrogameswap VideoGameRescue 1
+setlegacy retrogameswap White_Elephant_Hills 2
+setlegacy retrogameswap baumsquad09 1
+setlegacy retrogameswap Zaadyn 1
+setlegacy retrogameswap Escoe 1
+setlegacy retrogameswap lunchboxx45 1
+setlegacy retrogameswap JustEaton 1
+
+setlegacy retrogameswap Tronguy 2
+setlegacy retrogameswap h3xus 1
+setlegacy retrogameswap reverserain 2
+setlegacy retrogameswap Ash_D 2
+setlegacy retrogameswap Lamanamanumi 9
+setlegacy retrogameswap sexysaxmasta 1
+setlegacy retrogameswap E10DIN 1
+setlegacy retrogameswap Dodgson48 2
+
+setlegacy retrogameswap kd7rzv 1
+setlegacy retrogameswap JesusWasJewish 1
+setlegacy retrogameswap ducksonapond 1
+setlegacy retrogameswap bobrocks 1
+setlegacy retrogameswap umbroo 1
+setlegacy retrogameswap omboi 1
+setlegacy retrogameswap thatoneguy102 9
+setlegacy retrogameswap sharpfork 1
+
+setlegacy retrogameswap nsqueen119 1
+setlegacy retrogameswap idontknowwhattoname 1
+setlegacy retrogameswap full_synchro 1
+setlegacy retrogameswap Pontefex 6
+setlegacy retrogameswap irish4ever15 1
+setlegacy retrogameswap hunterdematteo 5
+setlegacy retrogameswap agayredditor911 3
+setlegacy retrogameswap jdog653 1
+
+setlegacy retrogameswap Emleaux 1
+setlegacy retrogameswap StupidLullabies 2
+setlegacy retrogameswap Poloniusisdead 2
+setlegacy retrogameswap marcymarcmarc 3
+setlegacy retrogameswap skankingrove 2
+setlegacy retrogameswap dooditzmike 4
+setlegacy retrogameswap redditOR98 1
+
+setlegacy retrogameswap DaveBehave 1
+setlegacy retrogameswap CaptainDelicious1510 3
+setlegacy retrogameswap BatmanV2 6
+setlegacy retrogameswap C-Drive 5
+setlegacy retrogameswap username-rage 12
+setlegacy retrogameswap nickthewookie 1
+setlegacy retrogameswap boodead 4
+setlegacy retrogameswap rizon 2
+
+setlegacy retrogameswap themaxvoltage 4
+setlegacy retrogameswap SonataNo8 2
+setlegacy retrogameswap anonymouserwin 2
+setlegacy retrogameswap linkmahboi 1
+setlegacy retrogameswap Scoutshoot3r 3
+setlegacy retrogameswap Sheltonator 3
+setlegacy retrogameswap iamGandalfTheBlack 1
+setlegacy retrogameswap PretendDr 1
+
+setlegacy retrogameswap zomboi 2
+setlegacy retrogameswap WheresWildo 2
+setlegacy retrogameswap pineamu 2
+setlegacy retrogameswap KingRamses 12
+setlegacy retrogameswap ZeroMidget 4
+setlegacy retrogameswap killerwarpig22 2
+setlegacy retrogameswap hack3rcmv 6
+setlegacy retrogameswap cr4zymanz0r 1
+
+setlegacy retrogameswap Geoffro 2
+setlegacy retrogameswap joppybabbo 8
+setlegacy retrogameswap AgentCoffee 5
+setlegacy retrogameswap Devastator642 1
+setlegacy retrogameswap BumpiestBread 1
+setlegacy retrogameswap SlaveOne 6
+setlegacy retrogameswap I_pollute 1
+setlegacy retrogameswap awa224 3
+
+setlegacy retrogameswap dieselr 1
+setlegacy retrogameswap modulok 1
+setlegacy retrogameswap Xanitsu 1
+setlegacy retrogameswap Godzillahatestsunami 1
+setlegacy retrogameswap lurkedlongtime 6
+setlegacy retrogameswap KEVYCOLLII 1
+setlegacy retrogameswap walokilo 2
+setlegacy retrogameswap Clerk18 2
+
+setlegacy retrogameswap Baron_Of_Bad_News 6
+setlegacy retrogameswap InCurrents 1
+setlegacy retrogameswap Bowtiesarecool 2
+setlegacy retrogameswap jukebox_romeo 1
+setlegacy retrogameswap HelloCthulhu 1
+setlegacy retrogameswap reddjoey 2
+setlegacy retrogameswap Chorazin 2
+setlegacy retrogameswap phiIIips 1
+
+setlegacy retrogameswap ExoStab 3
+setlegacy retrogameswap gjerdemj11 1
+setlegacy retrogameswap Lshade 5
+setlegacy retrogameswap Clerk18 1
+setlegacy retrogameswap jerry5278 1
+setlegacy retrogameswap Dilpickle2113 2
+setlegacy retrogameswap foolsrun 1
+setlegacy retrogameswap doctorquien28 1
+
+setlegacy retrogameswap DoobisntDobb 1
+setlegacy retrogameswap JamesRussels 1
+setlegacy retrogameswap hadioread 2
+setlegacy retrogameswap brohegan 1
+setlegacy retrogameswap bogaboy 1
+setlegacy retrogameswap skymind 1
+setlegacy retrogameswap yousillygit 1
+setlegacy retrogameswap denzelandme 3
+
+setlegacy retrogameswap whoadizzle 2
+setlegacy retrogameswap gaigra 3
+setlegacy retrogameswap novazero 1
+setlegacy retrogameswap sevenillusions 1
+setlegacy retrogameswap mewithoutme 6
+setlegacy retrogameswap wakadango 1
+setlegacy retrogameswap agentmith 1
+setlegacy retrogameswap HIGHer_ENTucation 1
+
+setlegacy retrogameswap sgasperino89 1
+setlegacy retrogameswap trav17 2
+setlegacy retrogameswap Draan 1
+setlegacy retrogameswap SlyMR 2
+setlegacy retrogameswap ebinsugewa 1
+setlegacy retrogameswap retroriggs 1
+setlegacy retrogameswap Deklaration 1
+setlegacy retrogameswap kthien 1
+
+setlegacy retrogameswap Cusano 1
+setlegacy retrogameswap DestinedWalnut 1
+setlegacy retrogameswap Spidrmn1234 1
+setlegacy retrogameswap dtd87 1
+setlegacy retrogameswap flcl4evr 1
+setlegacy retrogameswap juef 1
+setlegacy retrogameswap SGTxARTEAGA 1
+setlegacy retrogameswap reelbigfish0123 3
+
+setlegacy retrogameswap Arek_Fairbairn 1
+setlegacy retrogameswap dinozach 1
+setlegacy retrogameswap Utgartha 1
+setlegacy retrogameswap tjac416 1
+setlegacy retrogameswap evanman69 1
+setlegacy retrogameswap darkshadowofxdeath 4
+setlegacy retrogameswap jawabait 1
+setlegacy retrogameswap dawdex 1
+setlegacy retrogameswap rebirf 1
+
+setlegacy retrogameswap Qu1nlan 2
+setlegacy retrogameswap mcw8222 2
+setlegacy retrogameswap dporter 1
+setlegacy retrogameswap thewillb 1
+setlegacy retrogameswap iswearisay 1
+setlegacy retrogameswap RoteDelano 1
+setlegacy retrogameswap MUGIWARApirate 1
