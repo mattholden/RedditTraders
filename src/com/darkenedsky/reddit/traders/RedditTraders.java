@@ -6,6 +6,7 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -229,7 +230,7 @@ public class RedditTraders {
 				return false;
 			}
 		} catch (Exception x) {
-			x.printStackTrace();
+			LOG.error(x);
 		}
 
 		return false;
@@ -299,8 +300,11 @@ public class RedditTraders {
 		}
 
 		for (PrivateMessage pm : messages) {
-			LOG.debug("Received message from redditor " + pm.getAuthor() + ": " + pm.getBody() + " // " + pm.getSubject());
-
+			LOG.debug("======================================================");
+			LOG.debug(Calendar.getInstance().getTime() + " Received message from redditor " + pm.getAuthor() + ": ");
+			LOG.debug("Subject: " + pm.getSubject());
+			LOG.debug(pm.getBody());
+			LOG.debug("\n");
 			// Mark the message read
 			try {
 				pm.markRead(config.getBotUser(), true);
@@ -343,6 +347,10 @@ public class RedditTraders {
 
 			try {
 				sendMessage(pm.getAuthor(), "RedditTraders Automated Message", response);
+				LOG.debug("Sending to " + pm.getAuthor() + ":");
+				LOG.debug(response.toString());
+				LOG.debug("\n");
+
 			} catch (Exception x) {
 				LOG.error(x);
 			}
@@ -475,7 +483,7 @@ public class RedditTraders {
 		String post = "uh=" + config.getBotUser().getModhash() + "&name=" + user + "&r=" + subreddit + "&css_class=" + flair + tradeCount;
 		LOG.debug(post);
 		Utils.post(post, new URL("http://www.reddit.com/api/flair"), config.getBotUser().getCookie());
-		LOG.debug("flair posted.");
+		LOG.debug("Flair posted.");
 
 	}
 
