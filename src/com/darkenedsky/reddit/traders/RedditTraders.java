@@ -14,6 +14,7 @@ import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.darkenedsky.reddit.traders.listener.Activate;
 import com.darkenedsky.reddit.traders.listener.Cake;
 import com.darkenedsky.reddit.traders.listener.Confirm;
 import com.darkenedsky.reddit.traders.listener.CountAllSubs;
+import com.darkenedsky.reddit.traders.listener.GetList;
 import com.darkenedsky.reddit.traders.listener.Help;
 import com.darkenedsky.reddit.traders.listener.Install;
 import com.darkenedsky.reddit.traders.listener.Lookup;
@@ -36,6 +38,7 @@ import com.darkenedsky.reddit.traders.listener.Resolve;
 import com.darkenedsky.reddit.traders.listener.SetBlameBan;
 import com.darkenedsky.reddit.traders.listener.SetFlair;
 import com.darkenedsky.reddit.traders.listener.SetLegacy;
+import com.darkenedsky.reddit.traders.listener.SetList;
 import com.darkenedsky.reddit.traders.listener.SetModFlair;
 import com.darkenedsky.reddit.traders.listener.SetTextFlair;
 import com.darkenedsky.reddit.traders.listener.TopTraders;
@@ -88,6 +91,10 @@ public class RedditTraders {
 		}
 	}
 
+	// only bother caching this locally, because checking in the DB would be too
+	// damn slow.
+	private ArrayList<String> messagesRead = new ArrayList<String>(10000);
+
 	private HashMap<String, RedditListener> listeners = new HashMap<String, RedditListener>();
 
 	/** Log4J instance */
@@ -130,6 +137,10 @@ public class RedditTraders {
 			addListener(new SetModFlair(this));
 			listeners.put("REMOVEMODFLAIR", new SetModFlair(this));
 			addListener(new SetBlameBan(this));
+			addListener(new SetList(this));
+			listeners.put("SETHAVELIST", new SetList(this));
+			addListener(new GetList(this));
+			listeners.put("HAVELIST", new GetList(this));
 
 			// Build a system tray icon
 			SystemTray tray = SystemTray.getSystemTray();
@@ -341,6 +352,14 @@ public class RedditTraders {
 		}
 
 		for (PrivateMessage pm : messages) {
+
+			// make sure we never process the same message twice, even if it
+			// doesn't properly get marked read
+			if (messagesRead.contains(pm.fullName)) {
+				continue;
+			}
+			messagesRead.add(pm.fullName);
+
 			LOG.debug("======================================================");
 			LOG.debug(Calendar.getInstance().getTime() + " Received message from redditor " + pm.getAuthor() + ": ");
 			LOG.debug("Subject: " + pm.getSubject());

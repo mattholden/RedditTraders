@@ -31,7 +31,9 @@ public class Help extends RedditListener {
 	@Override
 	public void process(PrivateMessage pm, String[] tokens, StringBuffer sb) throws Exception {
 
-		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n*Command Usage*\n\n");
+		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n");
+		sb.append("When sending a command, place the entire command in the message subject line unless directed otherwise below.\n\n");
+		sb.append("*Command Usage*\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
 		sb.append("HELP: Receive this message. \n\n* Usage: HELP\n\n* Example: HELP\n\n");
 		sb.append("MODHELP: Receive a list of commands for moderators only. \n\n* Usage: MODHELP\n\n* Example: MODHELP\n\n");
@@ -41,6 +43,10 @@ public class Help extends RedditListener {
 		sb.append("DISPUTE: Dispute that a trade was successful. *This will notify the mods.*\n\n* Usage: DISPUTE [trade id]\n\n* Example: DISPUTE 8675309\n\n");
 		sb.append("TOP20: Get the top 20 traders for a subreddit.\n\n* Usage: TOP20 [subreddit]\n\n* Example: TOP20 retrogameswap\n\n");
 		sb.append("ABOUT: Information about the bot's open-source license and authorship.\n\n* Usage: ABOUT\n\n* Example: ABOUT\n\n");
+		sb.append("WANTLIST: Look up the want list for a given redditor.\n\n* Usage: WANTLIST [subreddit] [redditor]\n\n* Example: WANTLIST retrogameswap RedditTraders\n\n");
+		sb.append("HAVELIST: Look up the have list for a given redditor.\n\n* Usage: HAVELIST [subreddit] [redditor]\n\n* Example: HAVELIST retrogameswap RedditTraders\n\n");
+		sb.append("SETWANTLIST: Set your want list for the given subreddit. The entire contents of the message body will be stored!\n\n* Usage: \nIn subject: SETWANTLIST [subreddit]\nIn body: Whatever text you want to set.\n\n* Example: \nIn subject:\nSETWANTLIST retrogameswap\nIn body: Looking for NES and SNES role-playing games.\n\n");
+		sb.append("SETHAVELIST: Set your have list for the given subreddit. The entire contents of the message body will be stored!\n\n* Usage: \nIn subject: SETHAVELIST [subreddit]\nIn body: Whatever text you want to set.\n\n* Example: \nIn subject:\nSETHAVELIST retrogameswap\nIn body: Mostly Dreamcast games. List at www.mystuff.com/list\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
 		sb.append("Questions? Visit the /r/" + config.getSupportReddit() + " subreddit or message /u/" + config.getAuthor() + ". \n\nPlease note that I only check for new messages every " + config.getSleepSec() + " seconds or so. Please be patient! ;)\n\n\n");
 	}
