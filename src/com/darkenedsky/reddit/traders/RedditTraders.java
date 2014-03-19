@@ -45,6 +45,7 @@ import com.darkenedsky.reddit.traders.listener.SetTextFlair;
 import com.darkenedsky.reddit.traders.listener.SetVerifiedEmail;
 import com.darkenedsky.reddit.traders.listener.TopTraders;
 import com.darkenedsky.reddit.traders.listener.Trade;
+import com.darkenedsky.reddit.traders.listener.Undo;
 import com.darkenedsky.reddit.traders.listener.ViewFlair;
 import com.omrlnr.jreddit.messages.PrivateMessage;
 import com.omrlnr.jreddit.subreddit.Subreddit;
@@ -145,6 +146,7 @@ public class RedditTraders {
 			listeners.put("HAVELIST", new GetList(this));
 			addListener(new SetAccountAgeRequirement(this));
 			addListener(new SetVerifiedEmail(this));
+			addListener(new Undo(this));
 
 			// Build a system tray icon
 			SystemTray tray = SystemTray.getSystemTray();
@@ -360,6 +362,12 @@ public class RedditTraders {
 			// make sure we never process the same message twice, even if it
 			// doesn't properly get marked read
 			if (messagesRead.contains(pm.fullName)) {
+				try {
+					pm.markRead(config.getBotUser(), true);
+
+				} catch (Exception e) {
+					LOG.error(e);
+				}
 				continue;
 			}
 			messagesRead.add(pm.fullName);
@@ -387,6 +395,7 @@ public class RedditTraders {
 			} catch (Exception x) {
 				LOG.error(x);
 				response.append("An unknown error occurred while processing this command:\n\n " + pm.getSubject() + "\n\n\n");
+				bodyCount++;
 			}
 			String[] body = pm.getBody().split("[\n]");
 			for (String s : body) {
@@ -396,11 +405,12 @@ public class RedditTraders {
 					}
 				} catch (Exception x) {
 					response.append("An unknown error occurred while processing this command:\n\n " + s + "\n\n\n");
+					bodyCount++;
 					LOG.error(x);
 				}
 			}
 
-			if (!didSubject && bodyCount == 0) {
+			if (!didSubject && bodyCount == 0 && pm.getAuthor().equals("RedditTraders") == false) {
 				try {
 					getListener("HELP").process(pm, body, response);
 				} catch (Exception x) {
