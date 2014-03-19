@@ -90,6 +90,11 @@ public class Trade extends RedditListener {
 			return;
 		}
 
+		if (!validateComments(url, msg.getAuthor(), tradeWith)) {
+			sb.append("TRADE error: The provided thread does not include a conversation between the trade partners.\n\n\n");
+			return;
+		}
+
 		long minAccountAge = 0;
 		boolean requireVerified = false;
 
@@ -133,6 +138,23 @@ public class Trade extends RedditListener {
 			return;
 		}
 
+		// see if the users already have a pending trade between them
+		PreparedStatement alreadyTrading = config.getJDBC().prepareStatement("select * from trades where (redditorid1 in (select redditorid from redditors where username ilike ? or username ilike ?) and redditorid2 in (select redditorid from redditors where username ilike ? or username ilike ?)) and subredditid = (select redditid from subreddits where subreddit ilike ?) and (status = 1 or threadurl = ?);");
+		alreadyTrading.setString(1, msg.getAuthor());
+		alreadyTrading.setString(2, tradeWith);
+		alreadyTrading.setString(3, msg.getAuthor());
+		alreadyTrading.setString(4, tradeWith);
+		alreadyTrading.setString(5, subreddit);
+		alreadyTrading.setString(6, url);
+		ResultSet setAT = alreadyTrading.executeQuery();
+		if (setAT.first()) {
+			setAT.close();
+			sb.append("TRADE error: You either already have an open trade with " + tradeWith + " on subreddit /r/" + subreddit + ", or you have already traded with this redditor on this thread once.\n\n\n");
+			return;
+		} else {
+			setAT.close();
+		}
+
 		// Do the insert
 		PreparedStatement ps3 = this.config.getJDBC().prepareStatement("select * from insert_trade(?,?,?,?,?);");
 		ps3.setString(1, sender);
@@ -170,4 +192,15 @@ public class Trade extends RedditListener {
 		sb.append("Thanks for being an active member of /r/" + subreddit + "!\n\n\n");
 	}
 
+	private boolean validateComments(String url, String user1, String user2) throws Exception {
+		String commentsurl = url;
+		if (commentsurl.endsWith("/")) {
+			commentsurl.substring(0, commentsurl.length() - 1);
+		}
+		commentsurl += ".json";
+		// JSONObject commentsJSON = (JSONObject) Utils.get("", new
+		// URL(commentsurl), config.getBotUser().getCookie());
+
+		return true;
+	}
 }

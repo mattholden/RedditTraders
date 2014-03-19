@@ -32,7 +32,7 @@ public class Help extends RedditListener {
 	public void process(PrivateMessage pm, String[] tokens, StringBuffer sb) throws Exception {
 
 		sb.append("*RedditTraders Trading Bot version " + config.getVersion() + " by /u/" + config.getAuthor() + "*\n\n");
-		sb.append("When sending a command, place the entire command in the message subject line unless directed otherwise below.\n\n");
+		sb.append("When sending a command, place the entire command in the message body unless directed otherwise below.\n\n");
 		sb.append("*Command Usage*\n\n");
 		sb.append("--------------------------------------------------------------\n\n");
 		sb.append("HELP: Receive this message. \n\n* Usage: HELP\n\n* Example: HELP\n\n");
