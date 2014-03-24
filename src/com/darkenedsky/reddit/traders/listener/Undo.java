@@ -66,7 +66,7 @@ public class Undo extends RedditListener {
 
 		// Can't check the moderator status without the subreddit as a
 		// parameter, which you don't have until you've done this query.
-		// SO check here to be sure.
+		// So check here to be sure.
 		String[] tok = { "UNDO", subreddit };
 		if (!instance.senderIsModerator(pm, tok)) {
 			modHelp(pm, tokens, sb);

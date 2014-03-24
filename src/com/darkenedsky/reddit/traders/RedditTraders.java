@@ -31,6 +31,7 @@ import com.darkenedsky.reddit.traders.listener.CountAllSubs;
 import com.darkenedsky.reddit.traders.listener.GetList;
 import com.darkenedsky.reddit.traders.listener.Help;
 import com.darkenedsky.reddit.traders.listener.Install;
+import com.darkenedsky.reddit.traders.listener.LastTrades;
 import com.darkenedsky.reddit.traders.listener.Lookup;
 import com.darkenedsky.reddit.traders.listener.ModHelp;
 import com.darkenedsky.reddit.traders.listener.RedditListener;
@@ -147,6 +148,7 @@ public class RedditTraders {
 			addListener(new SetAccountAgeRequirement(this));
 			addListener(new SetVerifiedEmail(this));
 			addListener(new Undo(this));
+			addListener(new LastTrades(this, "LAST10", 10));
 
 			// Build a system tray icon
 			SystemTray tray = SystemTray.getSystemTray();

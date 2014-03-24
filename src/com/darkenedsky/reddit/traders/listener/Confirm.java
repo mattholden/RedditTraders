@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import com.darkenedsky.reddit.traders.RedditTraders;
 import com.omrlnr.jreddit.messages.PrivateMessage;
@@ -52,8 +53,10 @@ public class Confirm extends RedditListener {
 		}
 
 		StringBuffer comments = new StringBuffer();
-		for (int i = 2; i < tokens.length; i++) {
-			comments.append(tokens[i] + " ");
+		if (tokens.length > 2) {
+			for (int i = 2; i < tokens.length; i++) {
+				comments.append(tokens[i] + " ");
+			}
 		}
 
 		// get the first username
@@ -124,8 +127,13 @@ public class Confirm extends RedditListener {
 		}
 
 		// update the DB
-		PreparedStatement ps = config.getJDBC().prepareStatement("update trades set status = 2, resolve_date = now() where tradeid = ?;");
-		ps.setInt(1, id);
+		PreparedStatement ps = config.getJDBC().prepareStatement("update trades set status = 2, resolve_date = now(), comments2 = ? where tradeid = ?;");
+		if (comments.toString() == null || comments.toString().equals("")) {
+			ps.setNull(1, Types.VARCHAR);
+		} else {
+			ps.setString(1, comments.toString());
+		}
+		ps.setInt(2, id);
 		ps.execute();
 
 		// update flair on both users
