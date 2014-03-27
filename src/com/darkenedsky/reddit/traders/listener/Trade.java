@@ -97,6 +97,7 @@ public class Trade extends RedditListener {
 
 		long minAccountAge = 0;
 		boolean requireVerified = false;
+		int checkBan = -1;
 
 		// make sure the row is there and active
 		PreparedStatement act = config.getJDBC().prepareStatement("select * from subreddits where activesub=true and subreddit ilike ?;");
@@ -109,6 +110,7 @@ public class Trade extends RedditListener {
 		} else {
 			minAccountAge = actsub.getLong("min_account_age_sec");
 			requireVerified = actsub.getBoolean("require_verified_email");
+			checkBan = actsub.getInt("checkban");
 		}
 		actsub.close();
 
@@ -135,6 +137,12 @@ public class Trade extends RedditListener {
 
 		if (!verified && requireVerified) {
 			sb.append("TRADE error: Accounts must have verified email addresses on Reddit to register trades on subreddit /r/" + subreddit + ".\n\n\n");
+			return;
+		}
+
+		// see if either user is banned
+		if (instance.checkBans(msg.getAuthor(), tradeWith, subreddit, checkBan)) {
+			sb.append("One or more of the users in this transaction has been banned from trading in /r/" + subreddit + ".\n\n\n");
 			return;
 		}
 

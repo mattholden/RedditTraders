@@ -66,6 +66,7 @@ public class Confirm extends RedditListener {
 
 		long minAccountAge = 0;
 		boolean requireVerified = false;
+		int checkBan = -1;
 
 		PreparedStatement p1 = config.getJDBC().prepareStatement("select * from redditors  join trades on (trades.redditorid1 = redditors.redditorid) join subreddits on (subreddits.redditid = trades.subredditid) where tradeid = ?;");
 		p1.setInt(1, id);
@@ -73,6 +74,7 @@ public class Confirm extends RedditListener {
 		if (rs1.first()) {
 			textFlair = rs1.getBoolean("textflair");
 			user1 = rs1.getString("username");
+			checkBan = rs1.getInt("checkban");
 			subreddit = rs1.getString("subreddit");
 			url = rs1.getString("threadurl");
 			status = rs1.getInt("status");
@@ -123,6 +125,12 @@ public class Confirm extends RedditListener {
 		user2 = rs2.getString("username");
 		if (!pm.getAuthor().equalsIgnoreCase(user2)) {
 			sb.append("CONFIRM error: Only the user who is is indicated as the trading partner in a trade may confirm it.\n\n\n");
+			return;
+		}
+
+		// see if either user is banned
+		if (instance.checkBans(user1, user2, subreddit, checkBan)) {
+			sb.append("One or more of the users in this transaction has been banned from trading in /r/" + subreddit + ".\n\n\n");
 			return;
 		}
 

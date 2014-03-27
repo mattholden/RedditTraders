@@ -18,8 +18,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import com.darkenedsky.reddit.traders.listener.About;
@@ -38,6 +41,7 @@ import com.darkenedsky.reddit.traders.listener.RedditListener;
 import com.darkenedsky.reddit.traders.listener.Resolve;
 import com.darkenedsky.reddit.traders.listener.SetAccountAgeRequirement;
 import com.darkenedsky.reddit.traders.listener.SetBlameBan;
+import com.darkenedsky.reddit.traders.listener.SetCheckBan;
 import com.darkenedsky.reddit.traders.listener.SetFlair;
 import com.darkenedsky.reddit.traders.listener.SetLegacy;
 import com.darkenedsky.reddit.traders.listener.SetList;
@@ -149,6 +153,7 @@ public class RedditTraders {
 			addListener(new SetVerifiedEmail(this));
 			addListener(new Undo(this));
 			addListener(new LastTrades(this, "LAST10", 10));
+			addListener(new SetCheckBan(this));
 
 			// Build a system tray icon
 			SystemTray tray = SystemTray.getSystemTray();
@@ -251,6 +256,53 @@ public class RedditTraders {
 	}
 
 	/**
+	 * Check if two users are banned, using the appropriate method defined in
+	 * the checkBan parameter
+	 * 
+	 * @param author
+	 *            first user to check
+	 * @param tradeWith
+	 *            second user to check
+	 * @param subreddit
+	 *            subreddit we are checking in (if not ALL)
+	 * @param checkBan
+	 *            checkban mode on the subreddit
+	 * @return true if either user is banned
+	 * @throws Exception
+	 */
+	public boolean checkBans(String author, String tradeWith, String subreddit, int checkBan) throws Exception {
+
+		// checking is turned off
+
+		switch (checkBan) {
+		case 1:
+			return this.isBanned(author, tradeWith, subreddit);
+		case 2:
+			PreparedStatement ps = config.getJDBC().prepareStatement("select subreddit from subreddits;");
+			ResultSet subs = ps.executeQuery();
+			if (subs.first()) {
+				while (true) {
+					if (isBanned(author, tradeWith, subs.getString("subreddit"))) {
+						subs.close();
+						return true;
+					}
+					if (subs.isLast()) {
+						break;
+					}
+					subs.next();
+				}
+			}
+			subs.close();
+			return false;
+
+			// checking is turned off
+		default:
+			return false;
+		}
+
+	}
+
+	/**
 	 * Evaluate the 'text' string to see if it is a valid command, and execute
 	 * it if it is.
 	 * 
@@ -297,6 +349,34 @@ public class RedditTraders {
 	}
 
 	/**
+	 * Dump a JSONObject to the log.
+	 * 
+	 * @param object
+	 *            JSONObject
+	 */
+	public void dump(Object object) {
+
+		if (object instanceof JSONObject) {
+			log("JSON Object");
+			JSONObject job = (JSONObject) object;
+			for (Object entry : job.entrySet()) {
+				Map.Entry<Object, Object> map = (Map.Entry<Object, Object>) entry;
+				log("Key: " + map.getKey() + " - Value: " + map.getValue());
+			}
+		} else if (object instanceof JSONArray) {
+			log("JSON Array");
+			JSONArray arr = (JSONArray) object;
+			for (Object ob : arr) {
+				JSONObject job = (JSONObject) ob;
+				for (Object entry : job.entrySet()) {
+					Map.Entry<Object, Object> map = (Map.Entry<Object, Object>) entry;
+					log("Key: " + map.getKey() + " - Value: " + map.getValue());
+				}
+			}
+		}
+	}
+
+	/**
 	 * Get the configuration settings.
 	 * 
 	 * @return the configuration.
@@ -314,6 +394,29 @@ public class RedditTraders {
 	 */
 	public RedditListener getListener(String cmd) {
 		return listeners.get(cmd.toUpperCase());
+	}
+
+	/**
+	 * Check if a user is banned
+	 * 
+	 * @param redditor
+	 *            redditor
+	 * @param redditor2
+	 *            another redditor to check in the same call (for efficiency)
+	 * @param subreddit
+	 *            subreddit name
+	 * @return true if the user is banned from the subreddit.
+	 */
+	public boolean isBanned(String redditor, String redditor2, String subreddit) throws Exception {
+
+		Subreddit sub = new Subreddit();
+		sub.setDisplayName(subreddit);
+		List<String> mods = sub.getBannedUsers(config.getBotUser());
+		ArrayList<String> lcmods = new ArrayList<String>();
+		for (String m : mods) {
+			lcmods.add(m.toLowerCase());
+		}
+		return lcmods.contains(redditor.toLowerCase()) || lcmods.contains(redditor2.toLowerCase());
 	}
 
 	/**
