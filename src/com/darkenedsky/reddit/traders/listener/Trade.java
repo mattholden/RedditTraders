@@ -7,6 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.darkenedsky.reddit.traders.RedditTraders;
 import com.omrlnr.jreddit.messages.PrivateMessage;
 import com.omrlnr.jreddit.user.User;
@@ -54,11 +57,6 @@ public class Trade extends RedditListener {
 		}
 
 		/* Now, let's do some safety checks... */
-		// WONTDO: Make sure both are subscribers. They don't necessarily have
-		// to be.
-		//
-		// TODO: see if both users have a comment on the thread
-
 		// Make sure you aren't doing anything truly silly.
 		if (sender.equalsIgnoreCase(tradeWith)) {
 			sb.append("TRADE error: You cannot trade with yourself.\n\n\n");
@@ -93,6 +91,7 @@ public class Trade extends RedditListener {
 			sb.append("TRADE error: The provided thread does not include a conversation between the trade partners.\n\n\n");
 			return;
 		}
+		instance.log("Comments validated...");
 
 		long minAccountAge = 0;
 		boolean requireVerified = false;
@@ -141,11 +140,14 @@ public class Trade extends RedditListener {
 			return;
 		}
 
+		instance.log("Checking bans...");
+
 		// see if either user is banned
 		if (instance.checkBans(msg.getAuthor(), tradeWith, subreddit, checkBan)) {
 			sb.append("One or more of the users in this transaction has been banned from trading in /r/" + subreddit + ".\n\n\n");
 			return;
 		}
+		instance.log("Checked bans...");
 
 		// see if the users already have a pending trade between them
 		PreparedStatement alreadyTrading = config.getJDBC().prepareStatement("select * from trades where (redditorid1 in (select redditorid from redditors where username ilike ? or username ilike ?) and redditorid2 in (select redditorid from redditors where username ilike ? or username ilike ?)) and subredditid = (select redditid from subreddits where subreddit ilike ?) and (status = 1 or threadurl = ?);");
@@ -164,6 +166,7 @@ public class Trade extends RedditListener {
 			setAT.close();
 		}
 
+		instance.log("Checking last trade...");
 		// see if the users too recently traded with each other
 		PreparedStatement lastTrading = config.getJDBC().prepareStatement("select max(trade_date) as most_recent from trades where (redditorid1 in (select redditorid from redditors where username ilike ? or username ilike ?) and redditorid2 in (select redditorid from redditors where username ilike ? or username ilike ?)) and subredditid = (select redditid from subreddits where subreddit ilike ?);");
 		lastTrading.setString(1, msg.getAuthor());
@@ -176,14 +179,17 @@ public class Trade extends RedditListener {
 		if (setLT.first()) {
 			lastTrade = setLT.getDate("most_recent");
 			setLT.close();
-			long msSince = System.currentTimeMillis() - lastTrade.getTime();
-			if (msSince < msecBetween) {
-				sb.append("TRADE error: You have traded with /u/" + tradeWith + " on subreddit /r/" + subreddit + " too recently. Please wait to confirm this trade.\n\n\n");
-				return;
+			if (lastTrade != null) {
+				long msSince = System.currentTimeMillis() - lastTrade.getTime();
+				if (msSince < msecBetween) {
+					sb.append("TRADE error: You have traded with /u/" + tradeWith + " on subreddit /r/" + subreddit + " too recently. Please wait to confirm this trade.\n\n\n");
+					return;
+				}
 			}
 		} else {
 			setLT.close();
 		}
+		instance.log("Checked last trade. inserting...");
 
 		// Do the insert
 		PreparedStatement ps3 = this.config.getJDBC().prepareStatement("select * from insert_trade(?,?,?,?,?);");
@@ -228,9 +234,29 @@ public class Trade extends RedditListener {
 			commentsurl.substring(0, commentsurl.length() - 1);
 		}
 		commentsurl += ".json";
-		// JSONObject commentsJSON = (JSONObject) Utils.get("", new
-		// URL(commentsurl), config.getBotUser().getCookie());
+		JSONArray commentsJSON = (JSONArray) Utils.get("", new URL(commentsurl), config.getBotUser().getCookie());
 
+		try {
+			// instance.dump(commentsJSON);
+			JSONObject c1 = (JSONObject) commentsJSON.get(1);
+			JSONObject d1 = (JSONObject) c1.get("data");
+			Object kids = d1.get("children");
+			String commentz = kids.toString();
+			commentz = commentz.toLowerCase();
+			instance.log("COMMENTZ: " + commentz);
+
+			String author1 = "\"author\":\"" + user1.toLowerCase() + "\"";
+			String author2 = "\"author\":\"" + user2.toLowerCase() + "\"";
+			instance.log(author1);
+			instance.log(author2);
+
+			if (commentz.indexOf(author1) == -1 || commentz.indexOf(author2) == -1) {
+				return false;
+			}
+		} catch (Exception x) {
+			x.printStackTrace();
+			throw x;
+		}
 		return true;
 	}
 }

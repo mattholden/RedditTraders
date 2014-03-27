@@ -374,6 +374,7 @@ public class RedditTraders {
 					Map.Entry<Object, Object> map = (Map.Entry<Object, Object>) entry;
 					log("Key: " + map.getKey() + " - Value: " + map.getValue());
 				}
+				log("------");
 			}
 		}
 	}
@@ -523,6 +524,7 @@ public class RedditTraders {
 				} catch (Exception x) {
 					response.append("An unknown error occurred while processing this command:\n\n " + body + "\n\n\n");
 					LOG.error(x);
+					x.printStackTrace();
 				}
 			}
 
@@ -534,6 +536,7 @@ public class RedditTraders {
 
 			} catch (Exception x) {
 				LOG.error(x);
+				x.printStackTrace();
 			}
 
 		}
