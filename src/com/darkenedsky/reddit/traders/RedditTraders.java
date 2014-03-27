@@ -42,6 +42,7 @@ import com.darkenedsky.reddit.traders.listener.Resolve;
 import com.darkenedsky.reddit.traders.listener.SetAccountAgeRequirement;
 import com.darkenedsky.reddit.traders.listener.SetBlameBan;
 import com.darkenedsky.reddit.traders.listener.SetCheckBan;
+import com.darkenedsky.reddit.traders.listener.SetDaysBetween;
 import com.darkenedsky.reddit.traders.listener.SetFlair;
 import com.darkenedsky.reddit.traders.listener.SetLegacy;
 import com.darkenedsky.reddit.traders.listener.SetList;
@@ -154,6 +155,7 @@ public class RedditTraders {
 			addListener(new Undo(this));
 			addListener(new LastTrades(this, "LAST10", 10));
 			addListener(new SetCheckBan(this));
+			addListener(new SetDaysBetween(this));
 
 			// Build a system tray icon
 			SystemTray tray = SystemTray.getSystemTray();

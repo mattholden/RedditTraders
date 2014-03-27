@@ -56,9 +56,8 @@ public class Trade extends RedditListener {
 		/* Now, let's do some safety checks... */
 		// WONTDO: Make sure both are subscribers. They don't necessarily have
 		// to be.
-		// TODO: Make sure neither user is banned?
+		//
 		// TODO: see if both users have a comment on the thread
-		// TODO: Watch for repeat traders
 
 		// Make sure you aren't doing anything truly silly.
 		if (sender.equalsIgnoreCase(tradeWith)) {
@@ -98,6 +97,7 @@ public class Trade extends RedditListener {
 		long minAccountAge = 0;
 		boolean requireVerified = false;
 		int checkBan = -1;
+		long msecBetween = -1;
 
 		// make sure the row is there and active
 		PreparedStatement act = config.getJDBC().prepareStatement("select * from subreddits where activesub=true and subreddit ilike ?;");
@@ -111,6 +111,7 @@ public class Trade extends RedditListener {
 			minAccountAge = actsub.getLong("min_account_age_sec");
 			requireVerified = actsub.getBoolean("require_verified_email");
 			checkBan = actsub.getInt("checkban");
+			msecBetween = actsub.getInt("daysbetween") * (60 * 60 * 24 * 1000);
 		}
 		actsub.close();
 
@@ -161,6 +162,27 @@ public class Trade extends RedditListener {
 			return;
 		} else {
 			setAT.close();
+		}
+
+		// see if the users too recently traded with each other
+		PreparedStatement lastTrading = config.getJDBC().prepareStatement("select max(trade_date) as most_recent from trades where (redditorid1 in (select redditorid from redditors where username ilike ? or username ilike ?) and redditorid2 in (select redditorid from redditors where username ilike ? or username ilike ?)) and subredditid = (select redditid from subreddits where subreddit ilike ?);");
+		lastTrading.setString(1, msg.getAuthor());
+		lastTrading.setString(2, tradeWith);
+		lastTrading.setString(3, msg.getAuthor());
+		lastTrading.setString(4, tradeWith);
+		lastTrading.setString(5, subreddit);
+		ResultSet setLT = lastTrading.executeQuery();
+		java.sql.Date lastTrade = null;
+		if (setLT.first()) {
+			lastTrade = setLT.getDate("most_recent");
+			setLT.close();
+			long msSince = System.currentTimeMillis() - lastTrade.getTime();
+			if (msSince < msecBetween) {
+				sb.append("TRADE error: You have traded with /u/" + tradeWith + " on subreddit /r/" + subreddit + " too recently. Please wait to confirm this trade.\n\n\n");
+				return;
+			}
+		} else {
+			setLT.close();
 		}
 
 		// Do the insert
