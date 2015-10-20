@@ -68,7 +68,7 @@ public class Trade extends RedditListener {
 
 		// Make sure the URL is in fact a reddit URL.
 		String _url = url.toLowerCase();
-		if (!url.startsWith("http://www.reddit.com/r/") && !url.startsWith('https://www.reddit.com/r/')) {
+		if (!url.startsWith("http://www.reddit.com/r/") && !url.startsWith("https://www.reddit.com/r/")) {
 			sb.append("TRADE error: You must provide a valid Reddit thread URL on a subreddit that this bot monitors.\n\n\n");
 			return;
 		}
